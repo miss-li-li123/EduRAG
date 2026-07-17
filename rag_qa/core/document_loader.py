@@ -148,7 +148,7 @@ def process_documents(directory_path, parent_chunk_size=conf.PARENT_CHUNK_SIZE,
 
 if __name__ == '__main__':
     chunks = process_documents(
-        'D:/precls/ai/workspace/Itcast_qa_system/rag_qa/data/ai_data',
+        'D:/code/PythonProject/Itcast_qa_system/rag_qa/data/ai_data',
         conf.PARENT_CHUNK_SIZE,
         conf.CHILD_CHUNK_SIZE,
         conf.CHUNK_OVERLAP,

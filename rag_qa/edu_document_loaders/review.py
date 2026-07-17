@@ -58,4 +58,4 @@ def ppt2text(filepath):
 
 
 if __name__ == '__main__':
-    ppt2text(filepath='D:/precls/ai/workspace/Itcast_qa_system/rag_qa/data/samples/ocr_01.pptx')
+    ppt2text(filepath='D:/code/PythonProject/Itcast_qa_system/rag_qa/data/samples/ocr_01.pptx')

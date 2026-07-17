@@ -6,7 +6,7 @@ import os
 
 class Config:
     # 初始化配置，加载 config.ini 文件（路径要修改为这个文件的绝对路径）
-    def __init__(self, config_file="D:/precls/ai/workspace/Itcast_qa_system/config.ini"):
+    def __init__(self, config_file="D:/code/PythonProject/Itcast_qa_system/config.ini"):
         # 创建配置解析器
         self.config = configparser.ConfigParser()
         # 读取配置文件
@@ -76,12 +76,13 @@ class Config:
         self.LOG_FILE = self.config.get('logger', 'log_file', fallback='logs/app.log')
 
         # model path
-        # self.bge_m3 = "D:/precls/ai/workspace/Itcast_qa_system/rag_qa/models/bge-m3"
-        # self.bge_reranker = "D:/precls/ai/workspace/Itcast_qa_system/rag_qa/models/bge-reranker-large"
-        self.nlp_bert_doc_seg = "D:/precls/ai/workspace/Itcast_qa_system/rag_qa/models/nlp_bert_document-segmentation_chinese-base"
-        self.bert_intent_cls = "D:/precls/ai/workspace/Itcast_qa_system/rag_qa/core/bert_query_classifier"
+        # self.bge_m3 = "D:/code/PythonProject/Itcast_qa_system/rag_qa/models/bge-m3"
+        # self.bge_reranker = "D:/code/PythonProject/Itcast_qa_system/rag_qa/models/bge-reranker-large"
+        self.nlp_bert_doc_seg = "D:/code/PythonProject/Itcast_qa_system/rag_qa/models/nlp_bert_document-segmentation_chinese-base"
+        self.bert_intent_cls = "D:/code/PythonProject/Itcast_qa_system/rag_qa/core/bert_query_classifier"
 
 
 if __name__ == '__main__':
     conf = Config()
-    print(conf.MYSQL_HOST)
+    print("mysql的主机地址是"+conf.MYSQL_HOST)
+    print("redis的密码是"+conf.REDIS_PASSWORD)

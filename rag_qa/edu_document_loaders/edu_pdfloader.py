@@ -113,7 +113,7 @@ class OCRPDFLoader(BaseLoader):
 
 if __name__ == '__main__':
     pdf_loader = OCRPDFLoader(
-        file_path="D:/precls/ai/workspace/Itcast_qa_system/rag_qa/data/ai_data/人工智能就业课课程大纲.pdf")  #
+        file_path="D:/code/PythonProject/Itcast_qa_system/rag_qa/data/ai_data/人工智能就业课课程大纲.pdf")  #
     doc = pdf_loader.load()
 
     print(type(doc))

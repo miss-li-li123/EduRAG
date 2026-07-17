@@ -21,7 +21,7 @@ class RAGSystem:
         #   初始化查询分类器
         self.query_classifier = QueryClassifier(
             conf.bert_intent_cls
-            # model_path='D:/precls/ai/workspace/Itcast_qa_system/rag_qa/core/bert_query_classifier/',
+            # model_path='D:/code/PythonProject/Itcast_qa_system/rag_qa/core/bert_query_classifier/',
         )
         #   初始化策略选择器
         self.strategy_selector = StrategySelector()

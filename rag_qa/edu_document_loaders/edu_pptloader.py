@@ -100,7 +100,7 @@ class OCRPPTLoader(BaseLoader):
 
 
 if __name__ == '__main__':
-    img_loader = OCRPPTLoader(filepath='D:/precls/ai/workspace/Itcast_qa_system/rag_qa/data/samples/ocr_01.pptx')
+    img_loader = OCRPPTLoader(filepath='D:/code/PythonProject/Itcast_qa_system/rag_qa/data/samples/ocr_01.pptx')
     doc = img_loader.load()
     for d in doc:
         print(d.page_content)

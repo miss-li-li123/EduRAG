@@ -282,7 +282,7 @@ if __name__ == "__main__":
     vector_store = VectorStore()
 
     # 添加文档到向量库中
-    #directory_path = 'D:/precls/ai/workspace/Itcast_qa_system/rag_qa/data/ai_data'
+    #directory_path = 'D:/code/PythonProject/Itcast_qa_system/rag_qa/data/ai_data'
     #print(f"embedding_function.dim--》{vector_store.embedding_function.dim}")
     #documents = process_documents(directory_path)  # 文档切块
     #vector_store.add_documents(documents)  # 写入Milvus

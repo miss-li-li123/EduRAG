@@ -37,7 +37,7 @@ class OCRIMGLoader(BaseLoader):
 
 
 if __name__ == '__main__':
-    img_loader = OCRIMGLoader(img_path='D:/precls/ai/workspace/Itcast_qa_system/rag_qa/data/samples/ocr_04.png')
+    img_loader = OCRIMGLoader(img_path='D:/code/PythonProject/Itcast_qa_system/rag_qa/data/samples/ocr_04.png')
     docs = img_loader.load()
     for doc in docs:
         for page in doc.page_content.split("\n"):
