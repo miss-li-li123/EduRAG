@@ -102,7 +102,7 @@ class BM25Search:
                 answer = self.mysql_client.fetch_answer(original_question)
                 if answer:
                     # 缓存答案
-                    self.redis_client.set_data(f"answer:{query}", answer)
+                    self.redis_client.set_data(f"answer:{original_question}", answer)
                     # 记录搜索成功
                     self.logger.info(f"搜索成功，Softmax 相似度: {best_score:.3f}")
                     # 返回答案和 False
