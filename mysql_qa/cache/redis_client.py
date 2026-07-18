@@ -2,6 +2,8 @@
 import redis
 # 导入 JSON 处理
 import json
+# 导入日期时间处理
+from datetime import datetime, timedelta
 # 导入配置和日志
 from base import Config, logger
 
@@ -26,11 +28,21 @@ class RedisClient:
             self.logger.error(f"Redis 连接失败: {e}")
             raise
 
-    def set_data(self, key, value):
+    def set_data(self, key, value, expire=None):
         # 存储数据到 Redis
         try:
             # 存储 JSON 数据
             self.client.set(key, json.dumps(value, ensure_ascii=False))  # 使用 json.dumps() 将数据转换为 JSON 格式
+            if expire is None:
+                # 默认过期时间：当天 23:00:00
+                now = datetime.now()
+                expire_at = datetime(now.year, now.month, now.day, 23, 0, 0)
+                # 如果当前时间已过 23:00，则设为次日 23:00
+                if now >= expire_at:
+                    expire_at += timedelta(days=1)
+                self.client.expireat(key, expire_at)
+            elif expire:
+                self.client.expire(key, expire)
             # 记录存储成功
             self.logger.info(f"存储数据到 Redis: {key}")
         except redis.RedisError as e:

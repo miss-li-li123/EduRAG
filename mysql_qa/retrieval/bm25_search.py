@@ -125,7 +125,7 @@ if __name__ == "__main__":
     # 创建 BM25 搜索
     bm25_search = BM25Search(redis_client, mysql_client)
     # 测试搜索
-    query = "如何安装redis"
+    query = "windows如何安装redis,"
     answer, reliable = bm25_search.search(query)
     if answer:
         print(f"答案: {answer}")
