@@ -46,10 +46,10 @@ class Config:
 
         # LLM 配置
         # LLM 模型名
-        self.LLM_MODEL = self.config.get('llm', 'model', fallback='qwen-plus')
+        self.LLM_MODEL = self.config.get('llm', 'model', fallback='deepseek-v4-flash')
         # DashScope API 密钥
         # self.DASHSCOPE_API_KEY = self.config.get('llm', 'dashscope_api_key')
-        self.DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY")
+        self.DASHSCOPE_API_KEY = os.getenv("ALIYUN_API_KEY")
         # DashScope API 地址
         self.DASHSCOPE_BASE_URL = self.config.get('llm', 'dashscope_base_url',
                                                   fallback='https://dashscope.aliyuncs.com/compatible-mode/v1')

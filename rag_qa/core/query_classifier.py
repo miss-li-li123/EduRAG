@@ -211,7 +211,7 @@ class QueryClassifier:
 
 if __name__ == "__main__":
     # 初始化分类器
-    classifier = QueryClassifier(model_path="D:/code/PythonProject/Itcast_qa_system/rag_qa/models/nlp_bert_document-segmentation_chinese-base")  # 可以修改自己的bert模型路径
+    # classifier = QueryClassifier(model_path="D:/code/PythonProject/Itcast_qa_system/rag_qa/models/nlp_bert_document-segmentation_chinese-base")  # 可以修改自己的bert模型路径
 
     # 训练模型
     #classifier.train_model(data_file='../classify_data/qwen3-max_generate_200.json')  # 可以修改自己的训练数据路径

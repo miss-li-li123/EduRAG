@@ -42,8 +42,8 @@ eval_data = {
 dataset = Dataset.from_dict(eval_data)
 
 # 3. 配置RAGAS评估环境
-llm = ChatTongyi(model="qwen-max", api_key=os.getenv("DASHSCOPE_API_KEY"))
-embeddings = DashScopeEmbeddings(dashscope_api_key=os.getenv("DASHSCOPE_API_KEY"), model="text-embedding-v1")
+llm = ChatTongyi(model="deepseek-v4-flash", api_key=os.getenv("ALIYUN_API_KEY"))
+embeddings = DashScopeEmbeddings(dashscope_api_key=os.getenv("ALIYUN_API_KEY"), model="text-embedding-v1")
 # 4. 执行评估
 # 调用evaluate函数，传入数据集、评估指标、LLM模型和嵌入模型
 result = evaluate(

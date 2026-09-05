@@ -216,7 +216,7 @@ class VectorStore:
         # 创建加权排序器，稀疏向量权重 0.7，稠密向量权重 1.0
         ranker = WeightedRanker(1.0, 0.7)
         # 执行混合搜索，返回 Top-K 结果
-        results = self.client.hybrid_search(
+        results = self.client.hybridd_search(
             collection_name=self.collection_name,
             reqs=[dense_request, sparse_request],
             ranker=ranker,
@@ -282,12 +282,12 @@ if __name__ == "__main__":
     vector_store = VectorStore()
 
     # 添加文档到向量库中
-    #directory_path = 'D:/code/PythonProject/Itcast_qa_system/rag_qa/data/ai_data'
-    #print(f"embedding_function.dim--》{vector_store.embedding_function.dim}")
-    #documents = process_documents(directory_path)  # 文档切块
-    #vector_store.add_documents(documents)  # 写入Milvus
+    directory_path = 'D:/code/PythonProject/Itcast_qa_system/rag_qa/data/ai_data'
+    print(f"embedding_function.dim--》{vector_store.embedding_function.dim}")
+    documents = process_documents(directory_path)  # 文档切块
+    vector_store.add_documents(documents)  # 写入Milvus
 
-    query = "AI学科学费是多少？"
-    results = vector_store.hybrid_search_with_rerank(query, source_filter='ai')
-    print(f'results-->{results}')
-    print(f'results-->{len(results)}')
+    # query = "AI学科学费是多少？"
+    # results = vector_store.hybrid_search_with_rerank(query, source_filter='ai')
+    # print(f'results-->{results}')
+    # print(f'results-->{len(results)}')

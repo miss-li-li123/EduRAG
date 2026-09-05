@@ -1,0 +1,66 @@
+{
+  "test_size": 100,
+  "test_distribution": {
+    "通用知识": 50,
+    "专业咨询": 50
+  },
+  "bert": {
+    "model_path": "D:\\code\\PythonProject\\Itcast_qa_system\\rag_qa\\core\\bert_results\\intent-ckpt",
+    "accuracy": 0.97,
+    "macro_f1": 0.96999699969997,
+    "confusion_matrix": [
+      [
+        49,
+        1
+      ],
+      [
+        2,
+        48
+      ]
+    ],
+    "per_class": {
+      "通用知识": {
+        "precision": 0.9607843137254902,
+        "recall": 0.98,
+        "f1": 0.9702970297029703,
+        "support": 50.0
+      },
+      "专业咨询": {
+        "precision": 0.9795918367346939,
+        "recall": 0.96,
+        "f1": 0.9696969696969697,
+        "support": 50.0
+      }
+    }
+  },
+  "llm_prompt": {
+    "model": "deepseek-v4-flash",
+    "accuracy": 0.89,
+    "macro_f1": 0.8886526976414617,
+    "confusion_matrix": [
+      [
+        50,
+        0
+      ],
+      [
+        11,
+        39
+      ]
+    ],
+    "per_class": {
+      "通用知识": {
+        "precision": 0.819672131147541,
+        "recall": 1.0,
+        "f1": 0.9009009009009009,
+        "support": 50.0
+      },
+      "专业咨询": {
+        "precision": 1.0,
+        "recall": 0.78,
+        "f1": 0.8764044943820225,
+        "support": 50.0
+      }
+    }
+  },
+  "diff_accuracy": -0.07999999999999996
+}
