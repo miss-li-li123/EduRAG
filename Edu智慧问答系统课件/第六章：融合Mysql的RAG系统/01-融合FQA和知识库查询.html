@@ -1,0 +1,1222 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>6.1 融合FQA和知识库查询 - EduRAG智慧回答项目V1.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#faq" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-header__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EduRAG智慧回答项目V1.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              6.1 融合FQA和知识库查询
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-nav__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    EduRAG智慧回答项目V1.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章:项目背景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章:项目背景" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章:项目背景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF/01-RAG%E7%B3%BB%E7%BB%9F%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1.1 项目背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章:项目工具介绍
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章:项目工具介绍" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章:项目工具介绍
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/01-Ollama%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        2.1 Ollama大模型管理工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/02-LangChain%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" class="md-nav__link">
+        2.2 LangChain基础知识
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/03-Milvus%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" class="md-nav__link">
+        2.3 Mirvus向量数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/Milvus%E5%92%8CRedis%E7%9A%84%E5%AE%89%E8%A3%85%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        2.3 Milvus和Redis的安装(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章:基于Mysql数据库构建问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章:基于Mysql数据库构建问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章:基于Mysql数据库构建问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01.Python%E6%97%A5%E5%BF%97%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.1 Python日志介绍与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02.BM25%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.2 BM25算法简介与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03.Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%80%E4%BB%8B%E4%B8%8E%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        3.3 Redis数据库简介与使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04.%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F.html" class="md-nav__link">
+        3.4 基于Mysql数据库实现问答系统
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章:基于Milvus数据库构建RAG问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章:基于Milvus数据库构建RAG问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章:基于Milvus数据库构建RAG问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%B5%81%E7%A8%8B.html" class="md-nav__link">
+        4.1 整体架构与工程流程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02-%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.2 基础模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.3 文档处理模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04-%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8.html" class="md-nav__link">
+        4.4 向量存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/05-prompts%E8%AE%BE%E8%AE%A1%E4%B8%8Equery%E6%84%8F%E5%9B%BE%E8%AF%86%E5%88%AB.html" class="md-nav__link">
+        4.5 prompts设计与query意图识别
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/06-%E6%A3%80%E7%B4%A2%E7%AD%96%E7%95%A5%E4%B8%8ERAG%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" class="md-nav__link">
+        4.6 检索策略与RAG系统设计
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/07-RAG%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C.html" class="md-nav__link">
+        4.7 RAG系统运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        4.8 文档解析工具(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章:RAG系统评估
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章:RAG系统评估" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章:RAG系统评估
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/01-RAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        5.1 RAG系统评估工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/02-%E5%AE%9E%E7%8E%B0EduRAG%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BC%B0.html" class="md-nav__link">
+        5.2 实现EduRAG系统的评估
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/03-RAG%E8%AF%84%E4%BC%B0%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E6%9E%84%E9%80%A0%28%E6%89%A9%E5%B1%95%29.html" class="md-nav__link">
+        5.3 RAG评估数据集的构造(扩展)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章:融合Mysql的RAG系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章:融合Mysql的RAG系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章:融合Mysql的RAG系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          6.1 融合FQA和知识库查询
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="01-%E8%9E%8D%E5%90%88FQA%E5%92%8C%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9F%A5%E8%AF%A2.html" class="md-nav__link md-nav__link--active">
+        6.1 融合FQA和知识库查询
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标：
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 查询流程图
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 流程说明
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 代码介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="3 代码介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 导入必备的工具包
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 系统初始化
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-dashscope-api" class="md-nav__link">
+    3.3 调用 DashScope API
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    3.4 查询处理
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    3.5 命令行交互
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    章节总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02-%E5%A2%9E%E5%BC%BA%E5%9E%8BFAQ%E4%B8%8E%E7%9F%A5%E8%AF%86%E5%BA%93%E8%9E%8D%E5%90%88%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.2 增强型FAQ与知识库融合查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03-%E7%B3%BB%E7%BB%9FAPI%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91%E5%8F%8Awebui%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        6.3 系统API接口开发及webui应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="FastAPI%E5%92%8CFlask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        6.4 FastAPI和Flask的区别和联系(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标：
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 查询流程图
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 流程说明
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3 代码介绍
+  </a>
+  
+    <nav class="md-nav" aria-label="3 代码介绍">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 导入必备的工具包
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 系统初始化
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-dashscope-api" class="md-nav__link">
+    3.3 调用 DashScope API
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    3.4 查询处理
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35" class="md-nav__link">
+    3.5 命令行交互
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    章节总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="faq">融合 FAQ 和知识库查询<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h1>
+<h2 id="_1">学习目标：<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>理解智能问答系统的端到端工作流程。</li>
+<li>掌握 MySQL FAQ 和 RAG 系统的集成与协调。</li>
+<li>学习如何通过日志记录和错误处理提升系统健壮性。</li>
+</ul>
+<hr />
+<p><code>old_main.py</code> 是一个融合 MySQL FAQ 和 RAG 系统的交互式问答程序，专注于快速、精准的答案生成。它通过 MySQL 提供结构化数据的高效查询，通过 RAG 系统处理复杂问题，同时配备日志记录和用户友好的命令行界面，适合教育场景的实时问答需求。</p>
+<h2 id="1">1 查询流程图<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>以下是智能问答系统的查询流程图，展示从用户输入到答案输出的完整逻辑。</p>
+<div align=center><img src="../img/lc_01.png" style="zoom:50%" ><img/></div>
+
+<h2 id="2">2 流程说明<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>输入处理</strong>：用户提供查询 (<code>query</code>) 和可选的学科过滤 (<code>source_filter</code>)。</li>
+<li><strong>BM25 搜索</strong>：使用 BM25 算法在 MySQL 知识库中搜索，设置相似度阈值 0.85。</li>
+<li><strong>答案判断</strong>：<ul>
+<li>若找到可靠答案（相似度 &gt; 0.85），直接返回。</li>
+<li>若无可靠答案且需要 RAG，调用 RAG 系统生成答案。</li>
+<li>若无需 RAG，返回“未找到答案”。</li>
+</ul>
+</li>
+<li><strong>日志记录</strong>：记录查询内容、答案和处理时间，便于调试和性能分析。</li>
+<li><strong>输出</strong>：将答案返回给用户。</li>
+</ol>
+<h2 id="3">3 代码介绍<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>以下是 <code>old_main.py</code> 的完整代码，包含详细注释，逐行解析功能与实现逻辑。</p>
+<h3 id="31">3.1 导入必备的工具包<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入 MySQL 系统组件，用于数据库操作和搜索</span>
+<span class="kn">from</span> <span class="nn">mysql_qa</span> <span class="kn">import</span> <span class="n">MySQLClient</span><span class="p">,</span> <span class="n">RedisClient</span><span class="p">,</span> <span class="n">BM25Search</span>
+<span class="c1"># 导入 RAG 系统组件，用于知识库检索和答案生成</span>
+<span class="kn">from</span> <span class="nn">rag_qa</span> <span class="kn">import</span> <span class="n">VectorStore</span><span class="p">,</span> <span class="n">RAGSystem</span>
+<span class="c1"># 导入配置和日志工具，用于系统配置和日志记录</span>
+<span class="kn">from</span> <span class="nn">base</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Config</span>
+<span class="c1"># 导入 OpenAI 客户端，用于调用 DashScope API</span>
+<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+<span class="c1"># 导入时间库，用于记录处理时间</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</code></pre></div>
+<h3 id="32">3.2 系统初始化<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<ul>
+<li>(<code>__init__</code>) 初始化方法</li>
+<li><strong>功能</strong>：初始化日志、配置、数据库客户端、搜索模块、向量存储和 RAG 系统。</li>
+<li><strong>关键点</strong>：通过 Config 管理 API 密钥和模型参数，异常处理确保 OpenAI 客户端初始化成功。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">IntegratedQASystem</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 初始化日志工具，用于记录系统运行信息</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="c1"># 初始化配置对象，加载系统参数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
+        <span class="c1"># 初始化 MySQL 客户端，用于数据库操作</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mysql_client</span> <span class="o">=</span> <span class="n">MySQLClient</span><span class="p">()</span>
+        <span class="c1"># 初始化 Redis 客户端，用于缓存管理</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span> <span class="o">=</span> <span class="n">RedisClient</span><span class="p">()</span>
+        <span class="c1"># 初始化 BM25 搜索模块，结合 MySQL 和 Redis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bm25_search</span> <span class="o">=</span> <span class="n">BM25Search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mysql_client</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 初始化 OpenAI 客户端，连接 DashScope API</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">DASHSCOPE_API_KEY</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">DASHSCOPE_BASE_URL</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录 OpenAI 初始化失败的错误日志</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;OpenAI 客户端初始化失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 抛出异常，终止初始化</span>
+            <span class="k">raise</span>
+        <span class="c1"># 初始化向量存储，用于 RAG 系统的知识库管理</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span> <span class="o">=</span> <span class="n">VectorStore</span><span class="p">()</span>
+        <span class="c1"># 初始化 RAG 系统，传入向量存储和 DashScope API 调用函数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rag_system</span> <span class="o">=</span> <span class="n">RAGSystem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_dashscope</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="33-dashscope-api">3.3 调用 DashScope API<a class="headerlink" href="#33-dashscope-api" title="Permanent link">&para;</a></h3>
+<ul>
+<li>(<code>call_dashscope</code>) 方法</li>
+<li><strong>功能</strong>：通过 OpenAI 客户端调用 DashScope API，基于用户提示生成答案。</li>
+<li><strong>关键点</strong>：设置系统提示为“你是一个有用的助手”，异常处理捕获 API 调用失败，返回错误信息。</li>
+</ul>
+<div class="highlight"><pre><span></span><code>    <span class="k">def</span> <span class="nf">call_dashscope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+        <span class="c1"># 定义调用 DashScope API 的方法，生成自然语言答案</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 创建聊天完成请求，调用 DashScope API</span>
+            <span class="n">completion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">LLM_MODEL</span><span class="p">,</span>  <span class="c1"># 使用配置中的语言模型</span>
+                <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;你是一个有用的助手。&quot;</span><span class="p">},</span>  <span class="c1"># 系统提示</span>
+                    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>  <span class="c1"># 用户输入的提示</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+            <span class="c1"># 检查响应是否有效，返回答案内容</span>
+            <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span> <span class="k">if</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span> <span class="k">else</span> <span class="s2">&quot;错误：无效的 LLM 响应&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录 API 调用失败的错误日志</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LLM 调用失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回错误信息，便于调试</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;错误：LLM 调用失败 - </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div>
+<h3 id="34">3.4 查询处理<a class="headerlink" href="#34" title="Permanent link">&para;</a></h3>
+<ul>
+<li>(<code>query</code>) 方法</li>
+<li><strong>功能</strong>：处理用户查询，优先通过 BM25 搜索 MySQL，若无可靠答案则回退到 RAG 系统。</li>
+<li><strong>关键点</strong>：设置 BM25 相似度阈值 0.85，记录查询和处理时间，支持学科过滤。</li>
+</ul>
+<div class="highlight"><pre><span></span><code>    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">source_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># 定义查询方法，处理用户输入的查询</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>  <span class="c1"># 记录查询开始时间</span>
+        <span class="c1"># 记录查询信息到日志</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;处理查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="c1"># 执行 BM25 搜索，获取答案和是否需要 RAG 的标志</span>
+        <span class="n">answer</span><span class="p">,</span> <span class="n">need_rag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bm25_search</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">answer</span><span class="p">:</span>
+            <span class="c1"># 如果找到可靠答案，记录答案到日志</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MySQL 答案: </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 计算处理时间</span>
+            <span class="n">processing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="c1"># 记录处理时间到日志</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;查询处理耗时 </span><span class="si">{</span><span class="n">processing_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">秒&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回 MySQL 答案</span>
+            <span class="k">return</span> <span class="n">answer</span>
+        <span class="k">elif</span> <span class="n">need_rag</span><span class="p">:</span>
+            <span class="c1"># 如果需要 RAG，记录回退信息到日志</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;无可靠 MySQL 答案，回退到 RAG&quot;</span><span class="p">)</span>
+            <span class="c1"># 调用 RAG 系统生成答案，支持学科过滤</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rag_system</span><span class="o">.</span><span class="n">generate_answer</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">source_filter</span><span class="o">=</span><span class="n">source_filter</span><span class="p">)</span>
+            <span class="c1"># 记录 RAG 答案到日志</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RAG 答案: </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 计算处理时间</span>
+            <span class="n">processing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="c1"># 记录处理时间到日志</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;查询处理耗时 </span><span class="si">{</span><span class="n">processing_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">秒&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回 RAG 答案</span>
+            <span class="k">return</span> <span class="n">answer</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 如果无答案，记录信息到日志</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;未找到答案&quot;</span><span class="p">)</span>
+            <span class="c1"># 计算处理时间</span>
+            <span class="n">processing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="c1"># 记录处理时间到日志</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;查询处理耗时 </span><span class="si">{</span><span class="n">processing_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">秒&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回默认答案</span>
+            <span class="k">return</span> <span class="s2">&quot;未找到答案&quot;</span>
+</code></pre></div>
+<h3 id="35">3.5 命令行交互<a class="headerlink" href="#35" title="Permanent link">&para;</a></h3>
+<ul>
+<li>(<code>main</code>) 函数</li>
+<li><strong>功能</strong>：提供交互式命令行界面，接受用户查询和学科过滤，显示答案。</li>
+<li><strong>关键点</strong>：验证学科过滤的有效性，异常处理和资源清理确保系统健壮。</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># 定义主函数，提供命令行交互界面</span>
+    <span class="n">qa_system</span> <span class="o">=</span> <span class="n">IntegratedQASystem</span><span class="p">()</span>  <span class="c1"># 初始化问答系统</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 打印欢迎信息</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">欢迎使用集成问答系统！&quot;</span><span class="p">)</span>
+        <span class="c1"># 打印支持的学科类别</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;支持的来源: </span><span class="si">{</span><span class="n">qa_system</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">VALID_SOURCES</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># 提示用户输入查询或退出</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;输入查询进行问答，输入 &#39;exit&#39; 退出。&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># 获取用户输入的查询</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">输入查询: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;exit&quot;</span><span class="p">:</span>
+                <span class="c1"># 如果用户输入 exit，记录退出日志</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;退出系统&quot;</span><span class="p">)</span>
+                <span class="c1"># 打印退出信息</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;再见！&quot;</span><span class="p">)</span>
+                <span class="c1"># 退出循环</span>
+                <span class="k">break</span>
+            <span class="c1"># 获取用户输入的学科过滤</span>
+            <span class="n">source_filter</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;输入来源过滤 (</span><span class="si">{</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">qa_system</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">VALID_SOURCES</span><span class="p">)</span><span class="si">}</span><span class="s2">) (按 Enter 跳过): &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">source_filter</span> <span class="ow">and</span> <span class="n">source_filter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">qa_system</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">VALID_SOURCES</span><span class="p">:</span>
+                <span class="c1"># 如果学科过滤无效，记录警告日志</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;无效来源 &#39;</span><span class="si">{</span><span class="n">source_filter</span><span class="si">}</span><span class="s2">&#39;，忽略过滤&quot;</span><span class="p">)</span>
+                <span class="c1"># 打印无效信息，忽略过滤</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;无效来源 &#39;</span><span class="si">{</span><span class="n">source_filter</span><span class="si">}</span><span class="s2">&#39;，继续无过滤。&quot;</span><span class="p">)</span>
+                <span class="n">source_filter</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># 执行查询，获取答案</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">qa_system</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">source_filter</span><span class="p">)</span>
+            <span class="c1"># 打印答案</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">答案: </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># 记录系统错误日志</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;系统错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># 打印错误信息</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;发生错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="c1"># 无论是否发生错误，关闭 MySQL 连接</span>
+        <span class="n">qa_system</span><span class="o">.</span><span class="n">mysql_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># 如果脚本作为主程序运行，调用 main 函数</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="_2">章节总结<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>本章展示了如何通过 <code>old_main.py</code> 构建一个融合 MySQL FAQ 和 RAG 的智能问答系统。系统利用 BM25 算法快速匹配结构化数据，RAG 系统处理复杂查询，配备日志记录和错误处理，适合教育场景下的实时问答需求。</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/03-RAG%E8%AF%84%E4%BC%B0%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E6%9E%84%E9%80%A0%28%E6%89%A9%E5%B1%95%29.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 5.3 RAG评估数据集的构造(扩展)" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              5.3 RAG评估数据集的构造(扩展)
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="02-%E5%A2%9E%E5%BC%BA%E5%9E%8BFAQ%E4%B8%8E%E7%9F%A5%E8%AF%86%E5%BA%93%E8%9E%8D%E5%90%88%E6%9F%A5%E8%AF%A2.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 6.2 增强型FAQ与知识库融合查询" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              6.2 增强型FAQ与知识库融合查询
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

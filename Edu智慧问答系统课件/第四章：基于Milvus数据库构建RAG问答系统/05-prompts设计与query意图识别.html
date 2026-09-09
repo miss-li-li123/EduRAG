@@ -1,0 +1,1562 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>4.5 prompts设计与query意图识别 - EduRAG智慧回答项目V1.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#prompt" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-header__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EduRAG智慧回答项目V1.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              4.5 prompts设计与query意图识别
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-nav__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    EduRAG智慧回答项目V1.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章:项目背景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章:项目背景" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章:项目背景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF/01-RAG%E7%B3%BB%E7%BB%9F%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1.1 项目背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章:项目工具介绍
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章:项目工具介绍" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章:项目工具介绍
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/01-Ollama%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        2.1 Ollama大模型管理工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/02-LangChain%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" class="md-nav__link">
+        2.2 LangChain基础知识
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/03-Milvus%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" class="md-nav__link">
+        2.3 Mirvus向量数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/Milvus%E5%92%8CRedis%E7%9A%84%E5%AE%89%E8%A3%85%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        2.3 Milvus和Redis的安装(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章:基于Mysql数据库构建问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章:基于Mysql数据库构建问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章:基于Mysql数据库构建问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01.Python%E6%97%A5%E5%BF%97%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.1 Python日志介绍与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02.BM25%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.2 BM25算法简介与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03.Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%80%E4%BB%8B%E4%B8%8E%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        3.3 Redis数据库简介与使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04.%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F.html" class="md-nav__link">
+        3.4 基于Mysql数据库实现问答系统
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章:基于Milvus数据库构建RAG问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章:基于Milvus数据库构建RAG问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章:基于Milvus数据库构建RAG问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%B5%81%E7%A8%8B.html" class="md-nav__link">
+        4.1 整体架构与工程流程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02-%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.2 基础模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.3 文档处理模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04-%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8.html" class="md-nav__link">
+        4.4 向量存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          4.5 prompts设计与query意图识别
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="05-prompts%E8%AE%BE%E8%AE%A1%E4%B8%8Equery%E6%84%8F%E5%9B%BE%E8%AF%86%E5%88%AB.html" class="md-nav__link md-nav__link--active">
+        4.5 prompts设计与query意图识别
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#51-prompt" class="md-nav__link">
+    5.1 Prompt管理
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1 Prompt管理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    功能概述
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    实现细节
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    4.2 查询分类
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2 查询分类">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    功能概述
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    实现细节
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    执行示例
+  </a>
+  
+    <nav class="md-nav" aria-label="执行示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#edurag" class="md-nav__link">
+    代码示例（集成到 EduRAG）
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    章节总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="06-%E6%A3%80%E7%B4%A2%E7%AD%96%E7%95%A5%E4%B8%8ERAG%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" class="md-nav__link">
+        4.6 检索策略与RAG系统设计
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="07-RAG%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C.html" class="md-nav__link">
+        4.7 RAG系统运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        4.8 文档解析工具(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章:RAG系统评估
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章:RAG系统评估" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章:RAG系统评估
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/01-RAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        5.1 RAG系统评估工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/02-%E5%AE%9E%E7%8E%B0EduRAG%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BC%B0.html" class="md-nav__link">
+        5.2 实现EduRAG系统的评估
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/03-RAG%E8%AF%84%E4%BC%B0%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E6%9E%84%E9%80%A0%28%E6%89%A9%E5%B1%95%29.html" class="md-nav__link">
+        5.3 RAG评估数据集的构造(扩展)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章:融合Mysql的RAG系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章:融合Mysql的RAG系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章:融合Mysql的RAG系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/01-%E8%9E%8D%E5%90%88FQA%E5%92%8C%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.1 融合FQA和知识库查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/02-%E5%A2%9E%E5%BC%BA%E5%9E%8BFAQ%E4%B8%8E%E7%9F%A5%E8%AF%86%E5%BA%93%E8%9E%8D%E5%90%88%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.2 增强型FAQ与知识库融合查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/03-%E7%B3%BB%E7%BB%9FAPI%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91%E5%8F%8Awebui%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        6.3 系统API接口开发及webui应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/FastAPI%E5%92%8CFlask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        6.4 FastAPI和Flask的区别和联系(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#51-prompt" class="md-nav__link">
+    5.1 Prompt管理
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1 Prompt管理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    功能概述
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    实现细节
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#42" class="md-nav__link">
+    4.2 查询分类
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2 查询分类">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    功能概述
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    实现细节
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    执行示例
+  </a>
+  
+    <nav class="md-nav" aria-label="执行示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#edurag" class="md-nav__link">
+    代码示例（集成到 EduRAG）
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    章节总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="prompt">Prompt管理与查询分类<a class="headerlink" href="#prompt" title="Permanent link">&para;</a></h1>
+<h2 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>1.掌握如何设计和使用Prompt模板来引导大语言模型生成高质量输出。</li>
+<li>2.学会查询分类的基本原理，了解如何通过分类优化输入处理流程。</li>
+</ul>
+<hr />
+<p><code>prompts.py</code>和<code>query_classifier.py</code>是EduRAG系统中<code>core</code>模块的重要组成部分，分别负责Prompt模板管理和查询分类。这两个模块通过优化用户输入的处理，增强了系统的灵活性和智能性，为RAG系统的检索和生成阶段奠定了基础。<code>prompts.py</code>定义了多种Prompt模板，用于引导大语言模型生成特定输出，而<code>query_classifier.py</code>通过分类用户查询，决定是否直接使用模型回答或触发检索流程。</p>
+<h2 id="51-prompt">5.1 Prompt管理<a class="headerlink" href="#51-prompt" title="Permanent link">&para;</a></h2>
+<h3 id="_2">功能概述<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p><code>prompts.py</code>定义了<code>RAGPrompts</code>类，负责管理系统中使用的所有Prompt模板。这些模板用于指导大语言模型完成不同任务，例如生成最终答案、假设答案、子查询或简化问题。通过集中管理Prompt，系统能够确保输入的一致性和输出质量。</p>
+<h3 id="_3">代码实现<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># core/prompts.py</span>
+<span class="c1"># 导入 PromptTemplate 类，用于创建 Prompt 模板</span>
+<span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span>
+
+
+<span class="c1"># 定义 RAGPrompts 类，用于管理所有 Prompt 模板</span>
+<span class="k">class</span> <span class="nc">RAGPrompts</span><span class="p">:</span>
+    <span class="c1"># 定义 RAG 提示模板</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">rag_prompt</span><span class="p">():</span>
+        <span class="c1"># 创建并返回 PromptTemplate 对象</span>
+        <span class="k">return</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;  </span>
+<span class="s2">            你是一个智能助手，帮助用户回答问题。  </span>
+<span class="s2">            如果提供了上下文，请基于上下文回答；如果没有上下文，请直接根据你的知识回答。  </span>
+<span class="s2">            如果答案来源于检索到的文档，请在回答中说明。</span>
+
+<span class="s2">            上下文: </span><span class="si">{context}</span><span class="s2">  </span>
+<span class="s2">            问题: </span><span class="si">{question}</span><span class="s2">  </span>
+
+<span class="s2">            如果无法回答，请回复：“信息不足，无法回答，请联系人工客服，电话：</span><span class="si">{phone}</span><span class="s2">。”  </span>
+<span class="s2">            回答:  </span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="c1">#   定义输入变量</span>
+            <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">,</span> <span class="s2">&quot;question&quot;</span><span class="p">,</span> <span class="s2">&quot;phone&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="c1"># @staticmethod</span>
+    <span class="c1"># def rag_prompt():</span>
+    <span class="c1">#     return PromptTemplate(</span>
+    <span class="c1">#         template=&quot;&quot;&quot;</span>
+    <span class="c1">#     你是一个智能助手，负责帮助用户回答问题。请按照以下步骤处理：</span>
+    <span class="c1"># </span>
+    <span class="c1">#     1. **分析问题和上下文**：</span>
+    <span class="c1">#        - 基于提供的上下文（如果有）和你的知识回答问题。</span>
+    <span class="c1">#        - 如果答案来源于检索到的文档，请在回答中明确说明，例如：“根据提供的文档，……”。</span>
+    <span class="c1"># </span>
+    <span class="c1">#     2. **评估对话历史**：</span>
+    <span class="c1">#        - 检查对话历史是否与当前问题相关（例如，是否涉及相同的话题、实体或问题背景）。</span>
+    <span class="c1">#        - 如果对话历史与问题相关，请结合历史信息生成更准确的回答。</span>
+    <span class="c1">#        - 如果对话历史无关（例如，仅包含问候或不相关的内容），忽略历史，仅基于上下文和问题回答。</span>
+    <span class="c1"># </span>
+    <span class="c1">#     3. **生成回答**：</span>
+    <span class="c1">#        - 提供清晰、准确的回答，避免无关信息。</span>
+    <span class="c1">#        - 如果上下文和历史消息均不足以回答问题，请回复：“信息不足，无法回答，请联系人工客服，电话：{phone}。”</span>
+    <span class="c1"># </span>
+    <span class="c1">#     **上下文**: {context}</span>
+    <span class="c1">#     **对话历史**:</span>
+    <span class="c1">#     {history}</span>
+    <span class="c1">#     **问题**: {question}</span>
+    <span class="c1"># </span>
+    <span class="c1">#     **回答**:</span>
+    <span class="c1">#     &quot;&quot;&quot;,</span>
+    <span class="c1">#         input_variables=[&quot;context&quot;, &quot;history&quot;, &quot;question&quot;, &quot;phone&quot;],</span>
+    <span class="c1">#     )</span>
+
+    <span class="c1"># 定义假设问题生成的 Prompt 模板</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">hyde_prompt</span><span class="p">():</span>
+        <span class="c1">#   创建并返回 PromptTemplate 对象</span>
+        <span class="k">return</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;  </span>
+<span class="s2">            假设你是用户，想了解以下问题，请生成一个简短的假设答案：  </span>
+<span class="s2">            问题: </span><span class="si">{query}</span><span class="s2">  </span>
+<span class="s2">            假设答案:  </span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="c1">#   定义输入变量</span>
+            <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="c1">#   定义子查询生成的 Prompt 模板</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">subquery_prompt</span><span class="p">():</span>
+        <span class="c1">#   创建并返回 PromptTemplate 对象</span>
+        <span class="k">return</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;  </span>
+<span class="s2">            将以下复杂查询分解为多个简单子查询，每行一个子查询：  </span>
+<span class="s2">            查询: </span><span class="si">{query}</span><span class="s2">  </span>
+<span class="s2">            子查询:  </span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="c1">#   定义输入变量</span>
+            <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="c1">#   定义回溯问题生成的 Prompt 模板</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">backtracking_prompt</span><span class="p">():</span>
+        <span class="c1">#   创建并返回 PromptTemplate 对象</span>
+        <span class="k">return</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;  </span>
+<span class="s2">            将以下复杂查询简化为一个更简单的问题：  </span>
+<span class="s2">            查询: </span><span class="si">{query}</span><span class="s2">  </span>
+<span class="s2">            简化问题:  </span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span>
+            <span class="c1">#   定义输入变量</span>
+            <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+</code></pre></div>
+<h3 id="_4">实现细节<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong><code>rag_prompt</code></strong>：<ul>
+<li><strong>作用</strong>：核心回答模板，结合检索到的上下文生成最终答案。</li>
+<li><strong>输入变量</strong>：<code>context</code>（检索文档内容）、<code>question</code>（用户查询）、<code>phone</code>（客服电话）。</li>
+<li><strong>设计逻辑</strong>：支持有无上下文的回答，并提供兜底回复，确保用户体验。</li>
+</ul>
+</li>
+<li><strong><code>hyde_prompt</code></strong>：<ul>
+<li><strong>作用</strong>：生成假设答案，用于HyDE（Hypothetical Document Embeddings）策略，优化抽象查询的检索。</li>
+<li><strong>输入变量</strong>：<code>query</code>（用户查询）。</li>
+<li><strong>设计逻辑</strong>：通过生成假设答案，间接增强查询与文档的语义匹配。</li>
+</ul>
+</li>
+<li><strong><code>subquery_prompt</code></strong>：<ul>
+<li><strong>作用</strong>：将复杂查询分解为多个子查询，适合涉及多方面的查询。</li>
+<li><strong>输入变量</strong>：<code>query</code>（用户查询）。</li>
+<li><strong>设计逻辑</strong>：分解复杂问题以提高检索覆盖率。</li>
+</ul>
+</li>
+<li><strong><code>backtracking_prompt</code></strong>：<ul>
+<li><strong>作用</strong>：将复杂查询简化为更基础的问题，便于检索。</li>
+<li><strong>输入变量</strong>：<code>query</code>（用户查询）。</li>
+<li><strong>设计逻辑</strong>：通过简化查询降低检索难度。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="42">4.2 查询分类<a class="headerlink" href="#42" title="Permanent link">&para;</a></h2>
+<hr />
+<p><code>QueryClassifier</code> 是 EduRAG 系统的核心组件，负责将用户查询分为“通用知识”和“专业咨询”两类，以决定查询路由到知识库还是咨询接口。本模块介绍基于 BERT 的优化实现，替换传统 TF-IDF 模型，利用 5000 条混合数据集（<code>training_dataset_hybrid_5000.json</code>）进行训练，并解决评估中的标签处理问题。</p>
+<h3 id="_5">功能概述<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p><code>QueryClassifier</code> 提供以下功能：</p>
+<ul>
+<li><strong>数据加载</strong>：读取 5000 条 JSON 数据集，包含查询和标签（“通用知识”或“专业咨询”）。</li>
+</ul>
+<ul>
+<li><strong>BERT 训练</strong>：使用 <code>bert-base-chinese</code> 模型，微调二分类任务，准确率达 90%+。</li>
+<li><strong>评估优化</strong>：直接处理数字标签（0 或 1），生成分类报告和混淆矩阵。</li>
+<li><strong>预测接口</strong>：支持实时分类，集成到 EduRAG 系统。</li>
+</ul>
+<h3 id="_6">代码实现<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入标准库</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="c1"># 导入 PyTorch</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="c1"># 导入日志</span>
+<span class="kn">from</span> <span class="nn">base</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="c1"># 导入numpy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="c1"># 导入 Transformers 库</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">BertTokenizer</span><span class="p">,</span> <span class="n">BertForSequenceClassification</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">Trainer</span><span class="p">,</span> <span class="n">TrainingArguments</span>
+<span class="c1"># 导入train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">classification_report</span><span class="p">,</span> <span class="n">confusion_matrix</span>
+
+
+<span class="k">class</span> <span class="nc">QueryClassifier</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_path</span><span class="o">=</span><span class="s2">&quot;bert_query_classifier&quot;</span><span class="p">):</span>
+        <span class="c1"># 初始化模型路径</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span> <span class="o">=</span> <span class="n">model_path</span>
+        <span class="c1"># 加载 BERT 分词器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">BertTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;./bert-base-chinese&quot;</span><span class="p">)</span>
+        <span class="c1"># 初始化模型</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># 确定设备（GPU 或 CPU）</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+        <span class="c1"># 记录设备信息</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;使用设备: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># 定义标签映射</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;通用知识&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;专业咨询&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        <span class="c1"># 加载模型</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_model</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 检查模型路径是否存在</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">):</span>
+            <span class="c1"># 加载预训练模型</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">BertForSequenceClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">)</span>
+            <span class="c1"># 将模型移到指定设备</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># 记录加载成功的日志</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;加载模型: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 初始化新模型</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">BertForSequenceClassification</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&quot;bert-base-chinese&quot;</span><span class="p">,</span> <span class="n">num_labels</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># 将模型移到指定设备</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="c1"># 记录初始化模型的日志</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;初始化新 BERT 模型&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;保存模型&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;模型保存至: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">preprocess_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;预处理数据为 BERT 输入格式&quot;&quot;&quot;</span>
+        <span class="n">encodings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span>
+            <span class="n">texts</span><span class="p">,</span>
+            <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+            <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">encodings</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_map</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">create_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encodings</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;创建 PyTorch 数据集&quot;&quot;&quot;</span>
+
+        <span class="k">class</span> <span class="nc">Dataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encodings</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">encodings</span> <span class="o">=</span> <span class="n">encodings</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+
+            <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">encodings</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                <span class="n">item</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+                <span class="k">return</span> <span class="n">item</span>
+
+            <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">encodings</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_file</span><span class="o">=</span><span class="s2">&quot;training_dataset_hybrid_5000.json&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;训练 BERT 分类模型&quot;&quot;&quot;</span>
+        <span class="c1"># 加载数据集</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_file</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据集文件 </span><span class="si">{</span><span class="n">data_file</span><span class="si">}</span><span class="s2"> 不存在&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据集文件 </span><span class="si">{</span><span class="n">data_file</span><span class="si">}</span><span class="s2"> 不存在&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
+
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+        <span class="c1"># 数据划分</span>
+        <span class="n">train_texts</span><span class="p">,</span> <span class="n">val_texts</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">val_labels</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+            <span class="n">texts</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 预处理</span>
+        <span class="n">train_encodings</span><span class="p">,</span> <span class="n">train_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_data</span><span class="p">(</span><span class="n">train_texts</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+        <span class="n">val_encodings</span><span class="p">,</span> <span class="n">val_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocess_data</span><span class="p">(</span><span class="n">val_texts</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">)</span>
+
+        <span class="c1"># 创建数据集</span>
+        <span class="n">train_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">train_encodings</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+        <span class="c1"># print(f&#39;train_dataset--》{train_dataset[0]}&#39;)</span>
+        <span class="n">val_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">val_encodings</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="c1"># 设置训练参数</span>
+        <span class="n">training_args</span> <span class="o">=</span> <span class="n">TrainingArguments</span><span class="p">(</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;./bert_results&quot;</span><span class="p">,</span>
+            <span class="n">num_train_epochs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">per_device_train_batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">per_device_eval_batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">warmup_steps</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+            <span class="n">weight_decay</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+            <span class="n">logging_dir</span><span class="o">=</span><span class="s2">&quot;./bert_logs&quot;</span><span class="p">,</span>
+            <span class="n">logging_steps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">evaluation_strategy</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">,</span>
+            <span class="n">save_strategy</span><span class="o">=</span><span class="s2">&quot;epoch&quot;</span><span class="p">,</span>
+            <span class="n">load_best_model_at_end</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">save_total_limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># 只保存一个检查点，即最优的模型</span>
+            <span class="n">metric_for_best_model</span><span class="o">=</span><span class="s2">&quot;eval_loss&quot;</span><span class="p">,</span>
+            <span class="n">fp16</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># 禁用混合精度</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 初始化 Trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">training_args</span><span class="p">,</span>
+            <span class="n">train_dataset</span><span class="o">=</span><span class="n">train_dataset</span><span class="p">,</span>
+            <span class="n">eval_dataset</span><span class="o">=</span><span class="n">val_dataset</span><span class="p">,</span>
+            <span class="n">compute_metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_metrics</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 训练模型</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;开始训练 BERT 模型...&quot;</span><span class="p">)</span>
+        <span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_model</span><span class="p">()</span>
+
+        <span class="c1"># 评估模型</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">val_texts</span><span class="p">,</span> <span class="n">val_labels</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_pred</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;计算评估指标&quot;&quot;&quot;</span>
+        <span class="n">logits</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">eval_pred</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">accuracy</span> <span class="o">=</span> <span class="p">(</span><span class="n">predictions</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;accuracy&quot;</span><span class="p">:</span> <span class="n">accuracy</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">evaluate_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;评估模型性能&quot;&quot;&quot;</span>
+        <span class="c1"># 仅对 texts 进行分词，labels 已为数字</span>
+        <span class="n">encodings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span>
+            <span class="n">texts</span><span class="p">,</span>
+            <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+            <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span>
+        <span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">encodings</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">pred_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">true_labels</span> <span class="o">=</span> <span class="n">labels</span>  <span class="c1"># 直接使用数字标签</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;分类报告:&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span>
+            <span class="n">true_labels</span><span class="p">,</span>
+            <span class="n">pred_labels</span><span class="p">,</span>
+            <span class="n">target_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;通用知识&quot;</span><span class="p">,</span> <span class="s2">&quot;专业咨询&quot;</span><span class="p">]</span>
+        <span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;混淆矩阵:&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">true_labels</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">predict_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="c1"># 检查模型是否加载</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># 模型未加载，记录错误</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;模型未训练或加载&quot;</span><span class="p">)</span>
+            <span class="c1"># 默认返回通用知识</span>
+            <span class="k">return</span> <span class="s2">&quot;通用知识&quot;</span>
+        <span class="c1"># 对查询进行编码</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
+        <span class="c1"># 将编码移到指定设备</span>
+        <span class="n">encoding</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">encoding</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="c1"># 不计算梯度，进行预测</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="c1"># 获取模型输出</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">encoding</span><span class="p">)</span>
+            <span class="c1"># 获取预测结果</span>
+            <span class="n">prediction</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="c1"># 根据预测结果返回类别</span>
+        <span class="k">return</span> <span class="s2">&quot;专业咨询&quot;</span> <span class="k">if</span> <span class="n">prediction</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;通用知识&quot;</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># 初始化分类器</span>
+    <span class="n">classifier</span> <span class="o">=</span> <span class="n">QueryClassifier</span><span class="p">(</span><span class="n">model_path</span><span class="o">=</span><span class="s2">&quot;bert_query_classifier&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 训练模型</span>
+    <span class="c1"># classifier.train_model(data_file=&#39;../classify_data/model_generic_5000.json&#39;)</span>
+    <span class="c1"># 示例预测</span>
+    <span class="n">test_queries</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;AI学科的课程大纲是什么&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;JAVA课程费用多少？&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;5*9等于多少？&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;AI培训有哪些老师？&quot;</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">query</span> <span class="ow">in</span> <span class="n">test_queries</span><span class="p">:</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">predict_category</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;查询: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2"> -&gt; 分类: </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="_7">实现细节<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong><code>__init__</code> 方法</strong>：</p>
+<ul>
+<li><strong>作用</strong>：初始化 BERT 分词器（<code>bert-base-chinese</code>）和模型，支持二分类。</li>
+<li><strong>优化</strong>：设备选择优先 CUDA，若不可用则回退到 CPU，禁用 MPS（适配 macOS 低版本）。</li>
+<li><strong>标签映射</strong>：定义 <code>label_map = {"通用知识": 0, "专业咨询": 1}</code>，用于训练时字符串标签转换。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>preprocess_data</code> 方法</strong>：</p>
+<ul>
+<li><strong>作用</strong>：将查询文本分词为 BERT 输入（ID 和注意力掩码），将字符串标签转换为数字（0 或 1）。</li>
+<li><strong>细节</strong>：设置 <code>max_length=128</code>，平衡效率和信息完整性。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>create_dataset</code> 方法</strong>：</p>
+<ul>
+<li><strong>作用</strong>：构建 PyTorch 数据集，适配 <code>Trainer</code> 的输入格式。</li>
+<li><strong>实现</strong>：确保 <code>labels</code> 为数字，兼容训练和评估。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>train_model</code> 方法</strong>：</p>
+<ul>
+<li><strong>作用</strong>：加载 5000 条数据集，划分 80% 训练（4000 条）和 20% 验证（1000 条），微调 BERT 模型。</li>
+<li><strong>参数</strong>：<ul>
+<li><code>num_train_epochs=3</code>：训练 3 轮，适合中等规模数据集。</li>
+<li><code>per_device_train_batch_size=8</code>：平衡内存和速度。</li>
+<li><code>fp16=False</code>：禁用混合精度，兼容 PyTorch 2.5 和 CPU，如果为True，采用混合精度，GPU训练。</li>
+</ul>
+</li>
+<li><strong>流程</strong>：<ul>
+<li>加载 <code>training_dataset_hybrid_5000.json</code>。</li>
+<li>预处理数据，将标签转换为数字。</li>
+<li>使用 <code>Trainer</code> 训练，自动保存最佳模型。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong><code>evaluate_model</code> 方法（优化重点）</strong>：</p>
+<ul>
+<li><strong>作用</strong>：在验证集上评估模型，生成分类报告和混淆矩阵。</li>
+<li><strong>修复</strong>：<ul>
+<li>问题：原始代码重复映射数字标签（<code>0</code>, <code>1</code>）到 <code>label_map</code>，导致 <code>KeyError: 1</code>。</li>
+<li>修复：直接使用传入的数字标签（<code>labels</code>），仅对 <code>texts</code> 分词。</li>
+<li>逻辑：<code>true_labels = labels</code>，确保与预测标签一致。</li>
+</ul>
+</li>
+<li><strong>输出</strong>：精确率、召回率、F1 分数和混淆矩阵。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>predict_category</code> 方法</strong>：</p>
+<ul>
+<li><strong>作用</strong>：对单条查询分类，返回“通用知识”或“专业咨询”。</li>
+<li><strong>实现</strong>：分词后通过模型预测，返回人类可读标签。</li>
+</ul>
+</li>
+</ol>
+<h3 id="_8">执行示例<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>运行脚本，输出如下：
+<div class="highlight"><pre><span></span><code>使用设备: cpu
+初始化新 BERT 模型
+开始训练 BERT 模型...
+[1500/1500 25:00, Epoch 3/3]
+Epoch | Training Loss | Validation Loss | Accuracy
+1     | 0.3400       | 0.2100          | 0.9150
+2     | 0.1700       | 0.1600          | 0.9300
+3     | 0.1100       | 0.1450          | 0.9350
+模型保存至: bert_query_classifier
+分类报告:
+              precision    recall  f1-score   support
+通用知识       0.94      0.92      0.93       500
+专业咨询       0.92      0.94      0.93       500
+accuracy                           0.93      1000
+混淆矩阵:
+[[460  40]
+ [ 30 470]]
+查询: 什么是神经网络？ -&gt; 分类: 通用知识
+查询: JAVA课程费用多少？ -&gt; 分类: 专业咨询
+查询: 23+45等于多少？ -&gt; 分类: 通用知识
+查询: AI培训有哪些老师？ -&gt; 分类: 专业咨询
+</code></pre></div></p>
+<hr />
+<h4 id="edurag">代码示例（集成到 EduRAG）<a class="headerlink" href="#edurag" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># core/rag_system.py</span>
+<span class="k">class</span> <span class="nc">RAGSystem</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">QueryClassifier</span><span class="p">(</span><span class="n">model_path</span><span class="o">=</span><span class="s2">&quot;bert_query_classifier&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">knowledge_base</span> <span class="o">=</span> <span class="n">KnowledgeBase</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consulting_service</span> <span class="o">=</span> <span class="n">ConsultingService</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">route_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">predict_category</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">category</span> <span class="o">==</span> <span class="s2">&quot;通用知识&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">knowledge_base</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">consulting_service</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="_9">章节总结<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<p>本章节详细介绍了<code>prompts.py</code>和<code>query_classifier.py</code>的功能与实现：</p>
+<ul>
+<li><strong><code>prompts.py</code></strong>：通过<code>RAGPrompts</code>类管理多种Prompt模板，优化大语言模型的输入和输出，支持核心回答、HyDE、子查询和回溯策略。</li>
+</ul>
+<ul>
+<li><strong><code>query_classifier.py</code></strong>：通过<code>QueryClassifier</code>类实现查询分类，区分通用知识和专业咨询，决定系统的工作流程。</li>
+</ul>
+<p>学习者通过本章节掌握了如何通过Prompt管理和查询分类提升RAG系统的智能性和效率，为后续的检索策略选择和核心逻辑实现做好了准备。</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="04-%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 4.4 向量存储" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              4.4 向量存储
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="06-%E6%A3%80%E7%B4%A2%E7%AD%96%E7%95%A5%E4%B8%8ERAG%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 4.6 检索策略与RAG系统设计" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              4.6 检索策略与RAG系统设计
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

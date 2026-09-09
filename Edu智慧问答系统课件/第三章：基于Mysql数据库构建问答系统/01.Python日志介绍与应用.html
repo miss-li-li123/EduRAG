@@ -1,0 +1,1686 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>3.1 Python日志介绍与应用 - EduRAG智慧回答项目V1.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pythonlogging" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-header__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EduRAG智慧回答项目V1.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3.1 Python日志介绍与应用
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-nav__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    EduRAG智慧回答项目V1.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章:项目背景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章:项目背景" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章:项目背景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF/01-RAG%E7%B3%BB%E7%BB%9F%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1.1 项目背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章:项目工具介绍
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章:项目工具介绍" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章:项目工具介绍
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/01-Ollama%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        2.1 Ollama大模型管理工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/02-LangChain%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" class="md-nav__link">
+        2.2 LangChain基础知识
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/03-Milvus%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" class="md-nav__link">
+        2.3 Mirvus向量数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/Milvus%E5%92%8CRedis%E7%9A%84%E5%AE%89%E8%A3%85%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        2.3 Milvus和Redis的安装(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章:基于Mysql数据库构建问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章:基于Mysql数据库构建问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章:基于Mysql数据库构建问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          3.1 Python日志介绍与应用
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="01.Python%E6%97%A5%E5%BF%97%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link md-nav__link--active">
+        3.1 Python日志介绍与应用
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    日志记录概述
+  </a>
+  
+    <nav class="md-nav" aria-label="日志记录概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    核心概念
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    示例1：基础日志记录
+  </a>
+  
+    <nav class="md-nav" aria-label="示例1：基础日志记录">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    目标
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    示例2：自定义日志格式
+  </a>
+  
+    <nav class="md-nav" aria-label="示例2：自定义日志格式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    目标
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    示例3：将日志存储到文件
+  </a>
+  
+    <nav class="md-nav" aria-label="示例3：将日志存储到文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    目标
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    示例4：同时输出到控制台和文件
+  </a>
+  
+    <nav class="md-nav" aria-label="示例4：同时输出到控制台和文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    目标
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    代码实现
+  </a>
+  
+    <nav class="md-nav" aria-label="代码实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    整体结构
+  </a>
+  
+    <nav class="md-nav" aria-label="整体结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilsloggerpy" class="md-nav__link">
+    日志配置模块 (utils/logger.py)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mainpy" class="md-nav__link">
+    主程序 (main.py)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    总结
+  </a>
+  
+    <nav class="md-nav" aria-label="总结">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_24" class="md-nav__link">
+    应用场景
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02.BM25%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.2 BM25算法简介与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03.Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%80%E4%BB%8B%E4%B8%8E%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        3.3 Redis数据库简介与使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04.%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F.html" class="md-nav__link">
+        3.4 基于Mysql数据库实现问答系统
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章:基于Milvus数据库构建RAG问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章:基于Milvus数据库构建RAG问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章:基于Milvus数据库构建RAG问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%B5%81%E7%A8%8B.html" class="md-nav__link">
+        4.1 整体架构与工程流程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02-%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.2 基础模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.3 文档处理模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04-%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8.html" class="md-nav__link">
+        4.4 向量存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/05-prompts%E8%AE%BE%E8%AE%A1%E4%B8%8Equery%E6%84%8F%E5%9B%BE%E8%AF%86%E5%88%AB.html" class="md-nav__link">
+        4.5 prompts设计与query意图识别
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/06-%E6%A3%80%E7%B4%A2%E7%AD%96%E7%95%A5%E4%B8%8ERAG%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" class="md-nav__link">
+        4.6 检索策略与RAG系统设计
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/07-RAG%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C.html" class="md-nav__link">
+        4.7 RAG系统运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        4.8 文档解析工具(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章:RAG系统评估
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章:RAG系统评估" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章:RAG系统评估
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/01-RAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        5.1 RAG系统评估工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/02-%E5%AE%9E%E7%8E%B0EduRAG%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BC%B0.html" class="md-nav__link">
+        5.2 实现EduRAG系统的评估
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/03-RAG%E8%AF%84%E4%BC%B0%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E6%9E%84%E9%80%A0%28%E6%89%A9%E5%B1%95%29.html" class="md-nav__link">
+        5.3 RAG评估数据集的构造(扩展)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章:融合Mysql的RAG系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章:融合Mysql的RAG系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章:融合Mysql的RAG系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/01-%E8%9E%8D%E5%90%88FQA%E5%92%8C%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.1 融合FQA和知识库查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/02-%E5%A2%9E%E5%BC%BA%E5%9E%8BFAQ%E4%B8%8E%E7%9F%A5%E8%AF%86%E5%BA%93%E8%9E%8D%E5%90%88%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.2 增强型FAQ与知识库融合查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/03-%E7%B3%BB%E7%BB%9FAPI%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91%E5%8F%8Awebui%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        6.3 系统API接口开发及webui应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/FastAPI%E5%92%8CFlask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        6.4 FastAPI和Flask的区别和联系(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    日志记录概述
+  </a>
+  
+    <nav class="md-nav" aria-label="日志记录概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    核心概念
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    示例1：基础日志记录
+  </a>
+  
+    <nav class="md-nav" aria-label="示例1：基础日志记录">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    目标
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    示例2：自定义日志格式
+  </a>
+  
+    <nav class="md-nav" aria-label="示例2：自定义日志格式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    目标
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    示例3：将日志存储到文件
+  </a>
+  
+    <nav class="md-nav" aria-label="示例3：将日志存储到文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    目标
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    示例4：同时输出到控制台和文件
+  </a>
+  
+    <nav class="md-nav" aria-label="示例4：同时输出到控制台和文件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    目标
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    分析
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    代码实现
+  </a>
+  
+    <nav class="md-nav" aria-label="代码实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    整体结构
+  </a>
+  
+    <nav class="md-nav" aria-label="整体结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilsloggerpy" class="md-nav__link">
+    日志配置模块 (utils/logger.py)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mainpy" class="md-nav__link">
+    主程序 (main.py)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    运行结果
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    总结
+  </a>
+  
+    <nav class="md-nav" aria-label="总结">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_24" class="md-nav__link">
+    应用场景
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="pythonlogging">Python日志记录（Logging）简介与应用<a class="headerlink" href="#pythonlogging" title="Permanent link">&para;</a></h1>
+<h2 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ol>
+<li>理解日志记录的作用及其在程序开发中的重要性。</li>
+<li>掌握Python <code>logging</code> 模块的基本用法。</li>
+<li>学会通过示例配置日志级别、格式，并将日志存储到文件中。</li>
+<li>在工程化项目中应用日志记录，追踪程序运行状态。</li>
+</ol>
+<hr />
+<h2 id="_2">日志记录概述<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>日志（Logging）是程序运行时记录关键信息的一种方式，例如操作成功、错误发生或调试信息。它在开发和维护中非常重要，因为：</p>
+<ul>
+<li><strong>调试</strong>：帮助找到代码中的问题。</li>
+</ul>
+<ul>
+<li><strong>监控</strong>：记录程序的运行状态。</li>
+<li><strong>审计</strong>：追踪用户或系统的行为。</li>
+</ul>
+<p>Python的<code>logging</code>模块是一个内置工具，提供灵活的日志记录功能，比简单的<code>print</code>语句更强大。</p>
+<h3 id="_3">核心概念<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>日志级别</strong>：表示日志的重要性，常见级别从低到高：<ul>
+<li><code>DEBUG</code>：调试信息（最低）。</li>
+<li><code>INFO</code>：一般信息。</li>
+<li><code>WARNING</code>：警告，可能有问题。</li>
+<li><code>ERROR</code>：错误，已影响程序。</li>
+<li><code>CRITICAL</code>：严重错误（最高）。</li>
+</ul>
+</li>
+<li><strong>日志处理器（Handler）</strong>：决定日志输出到哪里（如控制台或文件）。</li>
+<li><strong>日志格式（Formatter）</strong>：定义日志的显示样式（如时间、级别、消息）。</li>
+</ol>
+<hr />
+<h2 id="1">示例1：基础日志记录<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<h3 id="_4">目标<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>通过简单示例展示如何记录日志到控制台。</p>
+<h3 id="_5">代码<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># 配置基本的日志设置</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="c1"># 获取日志记录器</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;Example1&quot;</span><span class="p">)</span>
+
+<span class="c1"># 记录不同级别的日志</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;这是调试信息，通常用于开发&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;程序运行正常&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;注意，可能有小问题&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;发生错误&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;严重错误，程序可能崩溃&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="_6">运行结果<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>2025-04-01 10:00:00,123 INFO Example1: 程序运行正常
+2025-04-01 10:00:00,124 WARNING Example1: 注意，可能有小问题
+2025-04-01 10:00:00,125 ERROR Example1: 发生错误
+2025-04-01 10:00:00,126 CRITICAL Example1: 严重错误，程序可能崩溃
+</code></pre></div>
+<h3 id="_7">分析<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>basicConfig(level=logging.INFO)</code>设置最低记录级别为<code>INFO</code>，因此<code>DEBUG</code>信息未显示。</li>
+<li>日志默认输出到控制台，格式为<code>时间 级别 名称: 消息</code>。</li>
+</ul>
+<hr />
+<h2 id="2">示例2：自定义日志格式<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<h3 id="_8">目标<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>自定义日志输出格式，添加时间和级别。</p>
+<h3 id="_9">代码<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># 配置日志格式</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># 获取日志记录器</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;Example2&quot;</span><span class="p">)</span>
+
+<span class="c1"># 记录日志</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;调试模式已开启&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;正在处理数据&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;数据处理失败&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="_10">运行结果<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>2025-04-01 10:00:00,123 - DEBUG - 调试模式已开启
+2025-04-01 10:00:00,124 - INFO - 正在处理数据
+2025-04-01 10:00:00,125 - ERROR - 数据处理失败
+</code></pre></div>
+<h3 id="_11">分析<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>format</code>参数使用占位符：<ul>
+<li><code>%(asctime)s</code>：记录时间。</li>
+<li><code>%(levelname)s</code>：日志级别。</li>
+<li><code>%(message)s</code>：日志消息。</li>
+</ul>
+</li>
+<li>级别设为<code>DEBUG</code>，所有日志都显示。</li>
+</ul>
+<hr />
+<h2 id="3">示例3：将日志存储到文件<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<h3 id="_12">目标<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<p>将日志保存到文件中，便于后续查看。</p>
+<h3 id="_13">代码<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># 配置日志，输出到文件</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;app.log&#39;</span><span class="p">,</span>  <span class="c1"># 日志文件路径</span>
+    <span class="n">filemode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span>         <span class="c1"># &#39;a&#39;表示追加，&#39;w&#39;表示覆盖</span>
+<span class="p">)</span>
+
+<span class="c1"># 获取日志记录器</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;Example3&quot;</span><span class="p">)</span>
+
+<span class="c1"># 记录日志</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;程序启动&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;内存使用率较高&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;无法连接数据库&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="_14">运行结果<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
+<ul>
+<li>控制台无输出，日志写入<code>app.log</code>文件：
+<div class="highlight"><pre><span></span><code>2025-04-01 10:00:00,123 - INFO - 程序启动
+2025-04-01 10:00:00,124 - WARNING - 内存使用率较高
+2025-04-01 10:00:00,125 - ERROR - 无法连接数据库
+</code></pre></div></li>
+</ul>
+<h3 id="_15">分析<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>filename</code>指定日志文件路径。</li>
+<li><code>filemode='a'</code>确保日志追加写入，不覆盖之前的内容。</li>
+</ul>
+<hr />
+<h2 id="4">示例4：同时输出到控制台和文件<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<h3 id="_16">目标<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h3>
+<p>将日志同时记录到控制台和文件中。</p>
+<h3 id="_17">代码<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># 创建日志记录器</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;Example4&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>  <span class="c1"># 设置记录器级别</span>
+
+<span class="c1"># 创建控制台处理器</span>
+<span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+<span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>  <span class="c1"># 控制台显示INFO及以上级别</span>
+
+<span class="c1"># 创建文件处理器</span>
+<span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s1">&#39;app.log&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>  <span class="c1"># 文件记录DEBUG及以上级别</span>
+
+<span class="c1"># 定义日志格式</span>
+<span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="c1"># 为处理器设置格式</span>
+<span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+<span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+
+<span class="c1"># 将处理器添加到记录器</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+
+<span class="c1"># 记录日志</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;调试信息，仅写入文件&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;程序运行正常&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;发生错误&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="_18">运行结果<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>控制台输出</strong>：
+<div class="highlight"><pre><span></span><code>2025-04-01 10:00:00,123 - INFO - 程序运行正常
+2025-04-01 10:00:00,124 - ERROR - 发生错误
+</code></pre></div></li>
+<li><strong>app.log文件内容</strong>：
+<div class="highlight"><pre><span></span><code>2025-04-01 10:00:00,123 - DEBUG - 调试信息，仅写入文件
+2025-04-01 10:00:00,124 - INFO - 程序运行正常
+2025-04-01 10:00:00,125 - ERROR - 发生错误
+</code></pre></div></li>
+</ul>
+<h3 id="_19">分析<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
+<ul>
+<li>使用<code>Handler</code>分别控制输出目标：<ul>
+<li><code>StreamHandler</code>：输出到控制台。</li>
+<li><code>FileHandler</code>：输出到文件。</li>
+</ul>
+</li>
+<li>不同处理器可设置不同级别，灵活性更高。</li>
+</ul>
+<hr />
+<h2 id="_20">代码实现<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<h3 id="_21">整体结构<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>logging_lesson/
+├── logs/
+│   └── app.log      # 日志文件
+├── utils/
+│   └── logger.py    # 日志配置模块
+├── main.py          # 主程序入口
+└── requirements.txt # 依赖文件（本例无需额外依赖）
+</code></pre></div>
+<h4 id="utilsloggerpy">日志配置模块 (<code>utils/logger.py</code>)<a class="headerlink" href="#utilsloggerpy" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">def</span> <span class="nf">setup_logger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">log_file</span><span class="o">=</span><span class="s1">&#39;logs/app.log&#39;</span><span class="p">):</span>
+    <span class="c1"># 确保日志目录存在</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">log_file</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># 创建日志记录器</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>  <span class="c1"># 设置最低级别</span>
+
+    <span class="c1"># 创建控制台处理器</span>
+    <span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="c1"># 创建文件处理器</span>
+    <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+    <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="c1"># 定义日志格式</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 设置处理器格式</span>
+    <span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+
+    <span class="c1"># 添加处理器（避免重复添加）</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">logger</span>
+</code></pre></div>
+<h4 id="mainpy">主程序 (<code>main.py</code>)<a class="headerlink" href="#mainpy" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">utils.logger</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+
+<span class="c1"># 初始化日志记录器</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="s2">&quot;MainApp&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">process_data</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;开始处理数据: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;数据为空，无法处理&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;数据处理完成&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;程序启动&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">process_data</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;处理结果: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;处理失败&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;程序结束&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="_22">运行结果<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>控制台输出</strong>：
+<div class="highlight"><pre><span></span><code>2025-04-01 10:00:00,123 - INFO - MainApp - 程序启动
+2025-04-01 10:00:00,124 - INFO - MainApp - 数据处理完成
+2025-04-01 10:00:00,125 - INFO - MainApp - 处理结果: HELLO
+2025-04-01 10:00:00,126 - INFO - MainApp - 程序结束
+</code></pre></div></li>
+<li><strong>logs/app.log 文件内容</strong>：
+<div class="highlight"><pre><span></span><code>2025-04-01 10:00:00,123 - INFO - MainApp - 程序启动
+2025-04-01 10:00:00,124 - DEBUG - MainApp - 开始处理数据: hello
+2025-04-01 10:00:00,125 - INFO - MainApp - 数据处理完成
+2025-04-01 10:00:00,126 - INFO - MainApp - 处理结果: HELLO
+2025-04-01 10:00:00,127 - INFO - MainApp - 程序结束
+</code></pre></div></li>
+</ul>
+<hr />
+<h2 id="_23">总结<a class="headerlink" href="#_23" title="Permanent link">&para;</a></h2>
+<p>本课通过示例讲解了Python <code>logging</code> 模块的使用：</p>
+<ul>
+<li><strong>基础</strong>：使用<code>basicConfig</code>快速配置日志。</li>
+</ul>
+<ul>
+<li><strong>自定义</strong>：设置格式、级别和输出目标。</li>
+<li><strong>存储</strong>：将日志保存到文件，同时支持控制台输出。</li>
+<li><strong>工程化</strong>：封装日志配置为模块，便于复用。</li>
+</ul>
+<h3 id="_24">应用场景<a class="headerlink" href="#_24" title="Permanent link">&para;</a></h3>
+<ul>
+<li>在QA系统中，记录数据库连接、检索结果等状态。</li>
+<li>调试时使用<code>DEBUG</code>级别，生产环境调整为<code>INFO</code>或<code>ERROR</code>。</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/Milvus%E5%92%8CRedis%E7%9A%84%E5%AE%89%E8%A3%85%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 2.3 Milvus和Redis的安装(扩展资料)" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              2.3 Milvus和Redis的安装(扩展资料)
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="02.BM25%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 3.2 BM25算法简介与应用" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              3.2 BM25算法简介与应用
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

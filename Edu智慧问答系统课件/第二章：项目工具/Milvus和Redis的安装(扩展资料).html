@@ -1,0 +1,1762 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>2.3 Milvus和Redis的安装(扩展资料) - EduRAG智慧回答项目V1.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#docker-milvus-redis" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-header__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EduRAG智慧回答项目V1.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2.3 Milvus和Redis的安装(扩展资料)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-nav__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    EduRAG智慧回答项目V1.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章:项目背景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章:项目背景" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章:项目背景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF/01-RAG%E7%B3%BB%E7%BB%9F%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1.1 项目背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章:项目工具介绍
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章:项目工具介绍" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章:项目工具介绍
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01-Ollama%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        2.1 Ollama大模型管理工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02-LangChain%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" class="md-nav__link">
+        2.2 LangChain基础知识
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03-Milvus%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" class="md-nav__link">
+        2.3 Mirvus向量数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          2.3 Milvus和Redis的安装(扩展资料)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="Milvus%E5%92%8CRedis%E7%9A%84%E5%AE%89%E8%A3%85%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link md-nav__link--active">
+        2.3 Milvus和Redis的安装(扩展资料)
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    前置条件
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#windows-11-milvus-redis" class="md-nav__link">
+    一、Windows 11 系统部署 Milvus 和 Redis
+  </a>
+  
+    <nav class="md-nav" aria-label="一、Windows 11 系统部署 Milvus 和 Redis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-docker-desktop" class="md-nav__link">
+    1. 安装 Docker Desktop
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-docker-compose" class="md-nav__link">
+    2. 配置 Docker Compose 文件
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-milvus-redis" class="md-nav__link">
+    3. 启动 Milvus 和 Redis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-milvus" class="md-nav__link">
+    4. 验证 Milvus 服务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-redis" class="md-nav__link">
+    5. 验证 Redis 服务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6. 停止和清理
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#m1-macos-milvus-redis" class="md-nav__link">
+    二、M1 芯片 macOS 系统部署 Milvus 和 Redis
+  </a>
+  
+    <nav class="md-nav" aria-label="二、M1 芯片 macOS 系统部署 Milvus 和 Redis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-docker-desktop_1" class="md-nav__link">
+    1. 安装 Docker Desktop
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-docker-compose_1" class="md-nav__link">
+    2. 配置 Docker Compose 文件
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-milvus-redis_1" class="md-nav__link">
+    3. 启动 Milvus 和 Redis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-milvus_1" class="md-nav__link">
+    4. 验证 Milvus 服务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-redis_1" class="md-nav__link">
+    5. 验证 Redis 服务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6_1" class="md-nav__link">
+    6. 停止和清理
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    常见问题与解决方法
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    参考资源
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章:基于Mysql数据库构建问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章:基于Mysql数据库构建问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章:基于Mysql数据库构建问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01.Python%E6%97%A5%E5%BF%97%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.1 Python日志介绍与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02.BM25%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.2 BM25算法简介与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03.Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%80%E4%BB%8B%E4%B8%8E%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        3.3 Redis数据库简介与使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04.%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F.html" class="md-nav__link">
+        3.4 基于Mysql数据库实现问答系统
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章:基于Milvus数据库构建RAG问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章:基于Milvus数据库构建RAG问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章:基于Milvus数据库构建RAG问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%B5%81%E7%A8%8B.html" class="md-nav__link">
+        4.1 整体架构与工程流程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02-%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.2 基础模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.3 文档处理模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04-%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8.html" class="md-nav__link">
+        4.4 向量存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/05-prompts%E8%AE%BE%E8%AE%A1%E4%B8%8Equery%E6%84%8F%E5%9B%BE%E8%AF%86%E5%88%AB.html" class="md-nav__link">
+        4.5 prompts设计与query意图识别
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/06-%E6%A3%80%E7%B4%A2%E7%AD%96%E7%95%A5%E4%B8%8ERAG%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" class="md-nav__link">
+        4.6 检索策略与RAG系统设计
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/07-RAG%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C.html" class="md-nav__link">
+        4.7 RAG系统运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        4.8 文档解析工具(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章:RAG系统评估
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章:RAG系统评估" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章:RAG系统评估
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/01-RAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        5.1 RAG系统评估工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/02-%E5%AE%9E%E7%8E%B0EduRAG%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BC%B0.html" class="md-nav__link">
+        5.2 实现EduRAG系统的评估
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/03-RAG%E8%AF%84%E4%BC%B0%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E6%9E%84%E9%80%A0%28%E6%89%A9%E5%B1%95%29.html" class="md-nav__link">
+        5.3 RAG评估数据集的构造(扩展)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章:融合Mysql的RAG系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章:融合Mysql的RAG系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章:融合Mysql的RAG系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/01-%E8%9E%8D%E5%90%88FQA%E5%92%8C%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.1 融合FQA和知识库查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/02-%E5%A2%9E%E5%BC%BA%E5%9E%8BFAQ%E4%B8%8E%E7%9F%A5%E8%AF%86%E5%BA%93%E8%9E%8D%E5%90%88%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.2 增强型FAQ与知识库融合查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/03-%E7%B3%BB%E7%BB%9FAPI%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91%E5%8F%8Awebui%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        6.3 系统API接口开发及webui应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/FastAPI%E5%92%8CFlask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        6.4 FastAPI和Flask的区别和联系(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    前置条件
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#windows-11-milvus-redis" class="md-nav__link">
+    一、Windows 11 系统部署 Milvus 和 Redis
+  </a>
+  
+    <nav class="md-nav" aria-label="一、Windows 11 系统部署 Milvus 和 Redis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-docker-desktop" class="md-nav__link">
+    1. 安装 Docker Desktop
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-docker-compose" class="md-nav__link">
+    2. 配置 Docker Compose 文件
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-milvus-redis" class="md-nav__link">
+    3. 启动 Milvus 和 Redis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-milvus" class="md-nav__link">
+    4. 验证 Milvus 服务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-redis" class="md-nav__link">
+    5. 验证 Redis 服务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    6. 停止和清理
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#m1-macos-milvus-redis" class="md-nav__link">
+    二、M1 芯片 macOS 系统部署 Milvus 和 Redis
+  </a>
+  
+    <nav class="md-nav" aria-label="二、M1 芯片 macOS 系统部署 Milvus 和 Redis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-docker-desktop_1" class="md-nav__link">
+    1. 安装 Docker Desktop
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-docker-compose_1" class="md-nav__link">
+    2. 配置 Docker Compose 文件
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-milvus-redis_1" class="md-nav__link">
+    3. 启动 Milvus 和 Redis
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-milvus_1" class="md-nav__link">
+    4. 验证 Milvus 服务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-redis_1" class="md-nav__link">
+    5. 验证 Redis 服务
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6_1" class="md-nav__link">
+    6. 停止和清理
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    常见问题与解决方法
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    参考资源
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="docker-milvus-redis">基于 Docker 部署单机版 Milvus 和 Redis 教程<a class="headerlink" href="#docker-milvus-redis" title="Permanent link">&para;</a></h1>
+<p>本教程介绍如何在 Windows 11 和 M1 芯片的 macOS 系统上使用 Docker 同时部署和运行单机版 Milvus（向量数据库）和 Redis（键值存储数据库）。教程分为两部分，分别针对不同操作系统提供详细步骤。</p>
+<h2 id="_1">前置条件<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>硬件要求<ul>
+<li>至少 8GB 内存（建议 16GB 或更高）。</li>
+<li>至少 20GB 可用磁盘空间（Milvus 和 Redis 数据存储）。</li>
+</ul>
+</li>
+<li>软件要求<ul>
+<li>已安装 Docker Desktop（Windows 11 或 macOS）。</li>
+<li>确保 Docker Compose 已包含在 Docker Desktop 中（通常默认安装）。</li>
+</ul>
+</li>
+<li>网络要求<ul>
+<li>稳定的互联网连接，用于拉取 Docker 镜像。</li>
+</ul>
+</li>
+<li>软件版本<ul>
+<li>Milvus：2.4.4（最新稳定版）。</li>
+<li>Redis：7.2（最新稳定版）。</li>
+</ul>
+</li>
+<li>端口要求<ul>
+<li>Milvus：<code>19530</code>（gRPC）、<code>9091</code>（RESTful API）。</li>
+<li>Redis：<code>6379</code>（默认端口）。</li>
+<li>确保以上端口未被占用。</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="windows-11-milvus-redis">一、Windows 11 系统部署 Milvus 和 Redis<a class="headerlink" href="#windows-11-milvus-redis" title="Permanent link">&para;</a></h2>
+<h3 id="1-docker-desktop">1. 安装 Docker Desktop<a class="headerlink" href="#1-docker-desktop" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>下载 Docker Desktop</p>
+<ul>
+<li>访问 <a href="https://www.docker.com/products/docker-desktop/">Docker 官方网站</a>，下载适用于 Windows 的 Docker Desktop 安装包。</li>
+</ul>
+</li>
+<li>
+<p>安装 Docker Desktop</p>
+<ul>
+<li>双击下载的安装文件，按照提示完成安装。</li>
+</ul>
+<ul>
+<li>
+<p>启用 WSL 2（Windows Subsystem for Linux 2）支持：</p>
+<ul>
+<li>
+<p>打开 PowerShell（以管理员身份），运行：</p>
+<div class="highlight"><pre><span></span><code>wsl --install
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>安装完成后，重启计算机。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>验证 Docker 安装</p>
+<ul>
+<li>
+<p>打开 PowerShell 或命令提示符，运行：</p>
+<div class="highlight"><pre><span></span><code>docker --version
+docker compose version
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>确保输出版本信息，例如 <code>Docker version 27.x.x</code> 和 <code>Docker Compose version v2.x.x</code>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-docker-compose">2. 配置 Docker Compose 文件<a class="headerlink" href="#2-docker-compose" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>创建项目目录</p>
+<ul>
+<li>
+<p>在本地磁盘（例如 C盘）创建一个文件夹，用于存放 Milvus 和 Redis 的配置文件和数据：</p>
+<div class="highlight"><pre><span></span><code>mkdir C:<span class="se">\m</span>ilvus_redis
+<span class="nb">cd</span> C:<span class="se">\m</span>ilvus_redis
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p>创建 Docker Compose 文件</p>
+<ul>
+<li>
+<p>在 C:\milvus_redis 目录下创建文件 </p>
+<div class="highlight"><pre><span></span><code>docker-compose.yml
+</code></pre></div>
+<p>内容如下：</p>
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.5&#39;</span><span class="w"></span>
+
+<span class="c1"># Windows/x86_64 Version</span><span class="w"></span>
+<span class="c1"># Redis Password set to: 1234</span><span class="w"></span>
+
+<span class="nt">services</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">etcd</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-etcd</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quay.io/coreos/etcd:v3.5.5</span><span class="w"></span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_AUTO_COMPACTION_MODE=revision</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_AUTO_COMPACTION_RETENTION=1000</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_QUOTA_BACKEND_BYTES=4294967296</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_ENABLE_V2=true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./volumes/etcd:/etcd/data</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd/data</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">minio</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-minio</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minio/minio:RELEASE.2023-03-20T20-16-18Z</span><span class="w"></span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">MINIO_ACCESS_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minioadmin</span><span class="w"></span>
+<span class="w">      </span><span class="nt">MINIO_SECRET_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minioadmin</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./volumes/minio:/minio/data</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minio server /minio/data</span><span class="w"></span>
+<span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CMD&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;curl&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;-f&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;http://localhost:9000/minio/health/live&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30s</span><span class="w"></span>
+<span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20s</span><span class="w"></span>
+<span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">standalone</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-standalone</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># 使用多架构镜像，Docker on Windows 会自动拉取 x86_64 版本</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvusdb/milvus:v2.4.4</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;milvus&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;run&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;standalone&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_ENDPOINTS=etcd:2379</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MINIO_ADDRESS=minio:9000</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./volumes/milvus:/var/lib/milvus</span><span class="w"></span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;19530:19530&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9091:9091&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;etcd&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;minio&quot;</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">redis</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-redis</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">redis:latest</span><span class="w"></span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span><span class="w"></span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;6379:6379&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./volumes/redis:/data</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># 设置 Redis 密码为 1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">redis-server --requirepass 1234</span><span class="w"></span>
+
+<span class="nt">networks</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-network</span><span class="w"></span>
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>
+<p>说明</p>
+<ul>
+<li>
+<p>Milvus 服务</p>
+<ul>
+<li><code>image</code>: 使用 Milvus 官方镜像 <code>milvusdb/milvus:v2.4.10</code>。</li>
+<li><code>ports</code>: 映射 gRPC（19530）和 RESTful API（9091）端口。</li>
+<li><code>volumes</code>: 数据持久化存储到本地 <code>./volumes/milvus</code> 目录。</li>
+<li><code>environment</code>: 配置日志级别和 Etcd 参数。</li>
+<li><code>command</code>: 启动 Milvus 单机模式。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>
+<p>Redis 服务</p>
+<ul>
+<li><code>image</code>: 使用 Redis 官方镜像 <code>redis:7.2</code>。</li>
+<li><code>ports</code>: 映射默认端口 <code>6379</code>。</li>
+<li><code>volumes</code>: 数据持久化存储到本地 <code>./volumes/redis</code> 目录。</li>
+<li><code>command</code>: 启用 AOF（Append Only File）持久化模式。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><code>volumes</code>: 定义持久化存储卷。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-milvus-redis">3. 启动 Milvus 和 Redis<a class="headerlink" href="#3-milvus-redis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>拉取镜像并启动容器</p>
+<ul>
+<li>
+<p>在 C:\milvus_redis 目录下，打开 PowerShell，运行：</p>
+<div class="highlight"><pre><span></span><code>docker compose up -d
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li><code>-d</code> 表示后台运行容器。</li>
+</ul>
+</li>
+<li>
+<p>验证容器状态</p>
+<ul>
+<li>
+<p>检查容器是否正常运行：</p>
+<div class="highlight"><pre><span></span><code>docker ps
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>确认 <code>milvus_standalone</code> 和 <code>redis</code> 容器均处于 <code>Up</code> 状态。</li>
+</ul>
+</li>
+</ol>
+<h3 id="4-milvus">4. 验证 Milvus 服务<a class="headerlink" href="#4-milvus" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>安装 Milvus Python SDK</p>
+<ul>
+<li>确保已安装 Python 3.8 或以上版本。</li>
+</ul>
+<ul>
+<li>
+<p>在 PowerShell 中安装：</p>
+<div class="highlight"><pre><span></span><code>pip install pymilvus
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p>测试 Milvus 连接</p>
+<ul>
+<li>
+<p>创建 Python 脚本（例如 test_milvus.py ），内容如下：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pymilvus</span> <span class="kn">import</span> <span class="n">connections</span><span class="p">,</span> <span class="n">utility</span>
+
+<span class="c1"># 连接到 Milvus</span>
+<span class="n">connections</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="s2">&quot;19530&quot;</span><span class="p">)</span>
+
+<span class="c1"># 检查版本</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Milvus version: </span><span class="si">{</span><span class="n">utility</span><span class="o">.</span><span class="n">get_server_version</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>
+<p>运行脚本：</p>
+<div class="highlight"><pre><span></span><code>python test_milvus.py
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>输出类似 <code>Milvus version: 2.4.10</code> 表示 Milvus 部署成功。</li>
+</ul>
+</li>
+</ol>
+<h3 id="5-redis">5. 验证 Redis 服务<a class="headerlink" href="#5-redis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>安装 Redis Python 客户端</p>
+<ul>
+<li>
+<p>在 PowerShell 中安装：</p>
+<div class="highlight"><pre><span></span><code>pip install redis
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p>测试 Redis 连接</p>
+<ul>
+<li>
+<p>创建 Python 脚本（例如 test_redis.py ），内容如下：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">redis</span>
+
+<span class="c1"># 连接到 Redis</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># 测试读写</span>
+<span class="n">client</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;Hello, Redis!&quot;</span><span class="p">)</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test_key&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redis value: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>
+<p>运行脚本：</p>
+<div class="highlight"><pre><span></span><code>python test_redis.py
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>输出类似 <code>Redis value: Hello, Redis!</code> 表示 Redis 部署成功。</li>
+</ul>
+</li>
+</ol>
+<h3 id="6">6. 停止和清理<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>停止服务</p>
+<div class="highlight"><pre><span></span><code>docker compose down
+</code></pre></div>
+</li>
+</ul>
+<hr />
+<h2 id="m1-macos-milvus-redis">二、M1 芯片 macOS 系统部署 Milvus 和 Redis<a class="headerlink" href="#m1-macos-milvus-redis" title="Permanent link">&para;</a></h2>
+<p>M1 芯片（ARM64 架构）运行 Docker 时需确保镜像兼容性。Milvus 和 Redis 官方镜像均支持 ARM64，因此可以直接使用，但需正确配置 Docker Desktop。</p>
+<h3 id="1-docker-desktop_1">1. 安装 Docker Desktop<a class="headerlink" href="#1-docker-desktop_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>下载 Docker Desktop</p>
+<ul>
+<li>访问 <a href="https://www.docker.com/products/docker-desktop/">Docker 官方网站</a>，下载适用于 macOS（Apple Silicon）的 Docker Desktop 安装包。</li>
+</ul>
+</li>
+<li>
+<p>安装 Docker Desktop</p>
+<ul>
+<li>双击下载的 <code>.dmg</code> 文件，按照提示拖动安装。</li>
+<li>安装完成后，启动 Docker Desktop，并确保其在菜单栏运行。</li>
+</ul>
+</li>
+<li>
+<p>验证 Docker 安装</p>
+<ul>
+<li>
+<p>打开终端，运行：</p>
+<div class="highlight"><pre><span></span><code>docker --version
+docker compose version
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>确保输出版本信息，例如 <code>Docker version 27.x.x</code> 和 <code>Docker Compose version v2.x.x</code>。</li>
+</ul>
+</li>
+<li>
+<p>启用 Rosetta（可选）</p>
+<ul>
+<li>如果遇到兼容性问题，可在 Docker Desktop 设置中启用 Rosetta 模拟：<ul>
+<li>打开 Docker Desktop -&gt; Settings -&gt; Features in Development -&gt; 勾选 “Use Rosetta for x86/AMD64 emulation on Apple Silicon”。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-docker-compose_1">2. 配置 Docker Compose 文件<a class="headerlink" href="#2-docker-compose_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>创建项目目录</p>
+<ul>
+<li>
+<p>在终端中创建并进入目录：</p>
+<div class="highlight"><pre><span></span><code>mkdir ~/milvus_redis
+<span class="nb">cd</span> ~/milvus_redis
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p>创建 Docker Compose 文件</p>
+<ul>
+<li>
+<p>创建文件 </p>
+<div class="highlight"><pre><span></span><code>docker-compose.yml
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.5&#39;</span><span class="w"></span>
+
+<span class="c1"># M1/ARM64 Mac Version</span><span class="w"></span>
+<span class="c1"># Redis Password set to: 1234</span><span class="w"></span>
+
+<span class="nt">services</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">etcd</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-etcd</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quay.io/coreos/etcd:v3.5.5</span><span class="w"></span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_AUTO_COMPACTION_MODE=revision</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_AUTO_COMPACTION_RETENTION=1000</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_QUOTA_BACKEND_BYTES=4294967296</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_ENABLE_V2=true</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./volumes/etcd:/etcd/data</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd/data</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">minio</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-minio</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minio/minio:RELEASE.2023-03-20T20-16-18Z</span><span class="w"></span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">MINIO_ACCESS_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minioadmin</span><span class="w"></span>
+<span class="w">      </span><span class="nt">MINIO_SECRET_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minioadmin</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./volumes/minio:/minio/data</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minio server /minio/data</span><span class="w"></span>
+<span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CMD&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;curl&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;-f&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;http://localhost:9000/minio/health/live&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30s</span><span class="w"></span>
+<span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20s</span><span class="w"></span>
+<span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">standalone</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-standalone</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># 使用多架构镜像，Docker on M1 会自动拉取 ARM64 版本</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvusdb/milvus:v2.4.4</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;milvus&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;run&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;standalone&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ETCD_ENDPOINTS=etcd:2379</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MINIO_ADDRESS=minio:9000</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./volumes/milvus:/var/lib/milvus</span><span class="w"></span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;19530:19530&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;9091:9091&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;etcd&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;minio&quot;</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">redis</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-redis</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">redis:latest</span><span class="w"> </span><span class="c1"># Redis 官方镜像同样支持多架构</span><span class="w"></span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">always</span><span class="w"></span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;6379:6379&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./volumes/redis:/data</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># 设置 Redis 密码为 1234</span><span class="w"></span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">redis-server --requirepass 1234</span><span class="w"></span>
+
+<span class="nt">networks</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">milvus-network</span><span class="w"></span>
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li><strong>注意</strong>：Milvus 和 Redis 镜像均支持 ARM64，无需额外配置。</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-milvus-redis_1">3. 启动 Milvus 和 Redis<a class="headerlink" href="#3-milvus-redis_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>拉取镜像并启动容器</p>
+<ul>
+<li>
+<p>在 ~/milvus_redis 目录下，运行：</p>
+<div class="highlight"><pre><span></span><code>docker compose up -d
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p>验证容器状态</p>
+<ul>
+<li>
+<p>检查容器是否运行：</p>
+<div class="highlight"><pre><span></span><code>docker ps
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>确认 <code>milvus_standalone</code> 和 <code>redis</code> 容器均处于 <code>Up</code> 状态。</li>
+</ul>
+</li>
+</ol>
+<h3 id="4-milvus_1">4. 验证 Milvus 服务<a class="headerlink" href="#4-milvus_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>安装 Milvus Python SDK</p>
+<ul>
+<li>确保已安装 Python 3.8 或以上版本。</li>
+</ul>
+<ul>
+<li>
+<p>在终端中安装：</p>
+<div class="highlight"><pre><span></span><code>pip install pymilvus
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p>测试 Milvus 连接</p>
+<ul>
+<li>
+<p>创建 Python 脚本（例如 test_milvus.py ），内容与 Windows 部分相同：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">pymilvus</span> <span class="kn">import</span> <span class="n">connections</span><span class="p">,</span> <span class="n">utility</span>
+
+<span class="c1"># 连接到 Milvus</span>
+<span class="n">connections</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="s2">&quot;19530&quot;</span><span class="p">)</span>
+
+<span class="c1"># 检查版本</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Milvus version: </span><span class="si">{</span><span class="n">utility</span><span class="o">.</span><span class="n">get_server_version</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>
+<p>运行脚本：</p>
+<div class="highlight"><pre><span></span><code>python test_milvus.py
+</code></pre></div>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="5-redis_1">5. 验证 Redis 服务<a class="headerlink" href="#5-redis_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>安装 Redis Python 客户端</p>
+<ul>
+<li>
+<p>在终端中安装：</p>
+<div class="highlight"><pre><span></span><code>pip install redis
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p>测试 Redis 连接</p>
+<ul>
+<li>
+<p>创建 Python 脚本（例如 test_redis.py ），内容与 Windows 部分相同：</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">redis</span>
+
+<span class="c1"># 连接到 Redis</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># 测试读写</span>
+<span class="n">client</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;test_key&quot;</span><span class="p">,</span> <span class="s2">&quot;Hello, Redis!&quot;</span><span class="p">)</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test_key&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redis value: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>
+<p>运行脚本：</p>
+<div class="highlight"><pre><span></span><code>python test_redis.py
+</code></pre></div>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="6_1">6. 停止和清理<a class="headerlink" href="#6_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p>停止服务</p>
+<div class="highlight"><pre><span></span><code>docker compose down
+</code></pre></div>
+</li>
+</ul>
+<ul>
+<li>
+<p>清理数据</p>
+<p>（可选）：</p>
+<ul>
+<li>
+<p>删除 milvus 和 redis 目录：</p>
+<div class="highlight"><pre><span></span><code>rm -rf ~/milvus_redis/volumes/milvus
+rm -rf ~//milvus_redis/volumes/redis
+</code></pre></div>
+</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="_2">常见问题与解决方法<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p>端口冲突</p>
+<ul>
+<li>如果 <code>19530</code>、<code>9091</code> 或 <code>6379</code> 端口被占用，修改 <code>docker-compose.yml</code> 中的端口映射（例如 <code>19531:19530</code>），并在客户端连接时使用新端口。</li>
+</ul>
+</li>
+<li>
+<p>镜像拉取失败</p>
+<ul>
+<li>
+<p>确保网络连接正常，或尝试手动拉取镜像：</p>
+<div class="highlight"><pre><span></span><code>docker pull milvusdb/milvus:v2.4.10
+docker pull redis:7.2
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p>M1 芯片兼容性问题</p>
+<ul>
+<li>如果镜像运行失败，检查 Docker Desktop 是否启用了 Rosetta 模拟。</li>
+</ul>
+</li>
+<li>
+<p>连接失败</p>
+<ul>
+<li>确保容器运行正常，检查防火墙（Windows）或网络设置（macOS）是否阻止了端口。</li>
+</ul>
+</li>
+<li>
+<p>Redis 数据未持久化</p>
+<ul>
+<li>确保 <code>docker-compose.yml</code> 中启用了 <code>--appendonly yes</code>，且 <code>./redis_data</code> 目录有写权限。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="_3">参考资源<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://milvus.io/docs">Milvus 官方文档</a></li>
+<li><a href="https://redis.io/documentation">Redis 官方文档</a></li>
+<li><a href="https://docs.docker.com/desktop/">Docker Desktop 文档</a></li>
+<li><a href="https://hub.docker.com/r/milvusdb/milvus">Milvus Docker 镜像</a></li>
+<li><a href="https://hub.docker.com/_/redis">Redis Docker 镜像</a></li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="03-Milvus%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 2.3 Mirvus向量数据库" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              2.3 Mirvus向量数据库
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01.Python%E6%97%A5%E5%BF%97%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 3.1 Python日志介绍与应用" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              3.1 Python日志介绍与应用
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

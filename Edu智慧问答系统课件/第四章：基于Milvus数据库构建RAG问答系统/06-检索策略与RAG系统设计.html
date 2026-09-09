@@ -1,0 +1,1537 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>4.6 检索策略与RAG系统设计 - EduRAG智慧回答项目V1.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#rag" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-header__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EduRAG智慧回答项目V1.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              4.6 检索策略与RAG系统设计
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-nav__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    EduRAG智慧回答项目V1.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章:项目背景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章:项目背景" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章:项目背景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF/01-RAG%E7%B3%BB%E7%BB%9F%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1.1 项目背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章:项目工具介绍
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章:项目工具介绍" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章:项目工具介绍
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/01-Ollama%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        2.1 Ollama大模型管理工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/02-LangChain%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" class="md-nav__link">
+        2.2 LangChain基础知识
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/03-Milvus%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" class="md-nav__link">
+        2.3 Mirvus向量数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/Milvus%E5%92%8CRedis%E7%9A%84%E5%AE%89%E8%A3%85%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        2.3 Milvus和Redis的安装(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章:基于Mysql数据库构建问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章:基于Mysql数据库构建问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章:基于Mysql数据库构建问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01.Python%E6%97%A5%E5%BF%97%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.1 Python日志介绍与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02.BM25%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.2 BM25算法简介与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03.Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%80%E4%BB%8B%E4%B8%8E%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        3.3 Redis数据库简介与使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04.%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F.html" class="md-nav__link">
+        3.4 基于Mysql数据库实现问答系统
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章:基于Milvus数据库构建RAG问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章:基于Milvus数据库构建RAG问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章:基于Milvus数据库构建RAG问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%B5%81%E7%A8%8B.html" class="md-nav__link">
+        4.1 整体架构与工程流程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02-%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.2 基础模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.3 文档处理模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04-%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8.html" class="md-nav__link">
+        4.4 向量存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="05-prompts%E8%AE%BE%E8%AE%A1%E4%B8%8Equery%E6%84%8F%E5%9B%BE%E8%AF%86%E5%88%AB.html" class="md-nav__link">
+        4.5 prompts设计与query意图识别
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          4.6 检索策略与RAG系统设计
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="06-%E6%A3%80%E7%B4%A2%E7%AD%96%E7%95%A5%E4%B8%8ERAG%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" class="md-nav__link md-nav__link--active">
+        4.6 检索策略与RAG系统设计
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    6.1 检索策略选择
+  </a>
+  
+    <nav class="md-nav" aria-label="6.1 检索策略选择">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    功能概述
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    代码示例
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    实现细节
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#62-rag" class="md-nav__link">
+    6.2 RAG核心逻辑
+  </a>
+  
+    <nav class="md-nav" aria-label="6.2 RAG核心逻辑">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    功能概述
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    代码示例
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    实现细节
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    6.3 完整流程的整合
+  </a>
+  
+    <nav class="md-nav" aria-label="6.3 完整流程的整合">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    从查询到回答的流程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    代码示例（整合逻辑）
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    章节总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="07-RAG%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C.html" class="md-nav__link">
+        4.7 RAG系统运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        4.8 文档解析工具(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章:RAG系统评估
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章:RAG系统评估" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章:RAG系统评估
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/01-RAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        5.1 RAG系统评估工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/02-%E5%AE%9E%E7%8E%B0EduRAG%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BC%B0.html" class="md-nav__link">
+        5.2 实现EduRAG系统的评估
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/03-RAG%E8%AF%84%E4%BC%B0%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E6%9E%84%E9%80%A0%28%E6%89%A9%E5%B1%95%29.html" class="md-nav__link">
+        5.3 RAG评估数据集的构造(扩展)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章:融合Mysql的RAG系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章:融合Mysql的RAG系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章:融合Mysql的RAG系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/01-%E8%9E%8D%E5%90%88FQA%E5%92%8C%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.1 融合FQA和知识库查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/02-%E5%A2%9E%E5%BC%BA%E5%9E%8BFAQ%E4%B8%8E%E7%9F%A5%E8%AF%86%E5%BA%93%E8%9E%8D%E5%90%88%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.2 增强型FAQ与知识库融合查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/03-%E7%B3%BB%E7%BB%9FAPI%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91%E5%8F%8Awebui%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        6.3 系统API接口开发及webui应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/FastAPI%E5%92%8CFlask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        6.4 FastAPI和Flask的区别和联系(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    6.1 检索策略选择
+  </a>
+  
+    <nav class="md-nav" aria-label="6.1 检索策略选择">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    功能概述
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    代码示例
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    实现细节
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#62-rag" class="md-nav__link">
+    6.2 RAG核心逻辑
+  </a>
+  
+    <nav class="md-nav" aria-label="6.2 RAG核心逻辑">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    功能概述
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    代码示例
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    实现细节
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    6.3 完整流程的整合
+  </a>
+  
+    <nav class="md-nav" aria-label="6.3 完整流程的整合">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    从查询到回答的流程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    代码示例（整合逻辑）
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    章节总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="rag">检索策略选择与RAG核心逻辑<a class="headerlink" href="#rag" title="Permanent link">&para;</a></h1>
+<h2 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>掌握如何根据查询特点动态选择最优策略。</li>
+<li>理解RAG系统如何整合查询分类、检索和生成阶段。</li>
+<li>能够应用策略选择和RAG逻辑，构建一个从输入处理到答案生成的高效系统。</li>
+</ul>
+<hr />
+<p><code>strategy_selector.py</code>和<code>rag_system.py</code>是EduRAG系统中<code>core</code>模块的核心组件，分别负责检索策略的选择和RAG系统的整体逻辑整合。<code>strategy_selector.py</code>通过大语言模型动态选择适合用户查询的检索策略，而<code>rag_system.py</code>则将前几章介绍的模块（如向量存储、Prompt管理和查询分类）整合起来，完成从查询输入到答案生成的完整流程。这两个模块共同确保系统能够高效、准确地响应用户的各种查询。</p>
+<h2 id="61">6.1 检索策略选择<a class="headerlink" href="#61" title="Permanent link">&para;</a></h2>
+<h3 id="_2">功能概述<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p><code>strategy_selector.py</code>定义了<code>StrategySelector</code>类，通过调用大语言模型根据用户查询选择最合适的检索策略。支持的策略包括直接检索、HyDE（假设问题检索）、子查询检索和回溯问题检索，旨在优化检索阶段的输入处理。</p>
+<h3 id="_3">代码示例<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># core/strategy_selector.py 源码</span>
+<span class="c1"># 导入 LangChain 提示模板</span>
+<span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span>
+<span class="c1"># 导入日志和配置</span>
+<span class="kn">from</span> <span class="nn">base</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Config</span>
+<span class="c1"># 导入 OpenAI</span>
+<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+
+
+<span class="k">class</span> <span class="nc">StrategySelector</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 初始化 OpenAI 客户端</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">DASHSCOPE_API_KEY</span><span class="p">,</span>
+                             <span class="n">base_url</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">DASHSCOPE_BASE_URL</span><span class="p">)</span>
+        <span class="c1"># 获取策略选择提示模板</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strategy_prompt_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_strategy_prompt</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">call_dashscope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">):</span>
+        <span class="c1"># 调用 DashScope API</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 创建聊天完成请求</span>
+            <span class="n">completion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">LLM_MODEL</span><span class="p">,</span>
+                <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;你是一个有用的助手。&quot;</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+                <span class="p">],</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="mf">0.1</span>
+            <span class="p">)</span>
+            <span class="c1"># 返回完成结果</span>
+            <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span> <span class="k">if</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span> <span class="k">else</span> <span class="s2">&quot;直接检索&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录 API 调用失败</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DashScope API 调用失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 默认返回直接检索</span>
+            <span class="k">return</span> <span class="s2">&quot;直接检索&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">_get_strategy_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#   定义私有方法，获取策略选择 Prompt 模板</span>
+        <span class="k">return</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            你是一个智能助手，负责分析用户查询 </span><span class="si">{query}</span><span class="s2">，并从以下四种检索增强策略中选择一个最适合的策略，直接返回策略名称，不需要解释过程。</span>
+
+<span class="s2">            以下是几种检索增强策略及其适用场景：</span>
+
+<span class="s2">            1.  **直接检索：**</span>
+<span class="s2">                * 描述：对用户查询直接进行检索，不进行任何增强处理。</span>
+<span class="s2">                * 适用场景：适用于查询意图明确，需要从知识库中检索**特定信息**的问题，例如：</span>
+<span class="s2">                    * 示例：</span>
+<span class="s2">                        * 查询：AI 学科学费是多少？</span>
+<span class="s2">                        * 策略：直接检索</span>
+<span class="s2">                    * 查询：JAVA的课程大纲是什么？</span>
+<span class="s2">                        * 策略：直接检索</span>
+<span class="s2">            2.  **假设问题检索（HyDE）：**</span>
+<span class="s2">                * 描述：使用 LLM 生成一个假设的答案，然后基于假设答案进行检索。</span>
+<span class="s2">                * 适用场景：适用于查询较为抽象，直接检索效果不佳的问题，例如：</span>
+<span class="s2">                    * 示例：</span>
+<span class="s2">                        * 查询：人工智能在教育领域的应用有哪些？</span>
+<span class="s2">                        * 策略：假设问题检索</span>
+<span class="s2">            3.  **子查询检索：**</span>
+<span class="s2">                * 描述：将复杂的用户查询拆分为多个简单的子查询，分别检索并合并结果。</span>
+<span class="s2">                * 适用场景：适用于查询涉及多个实体或方面，需要分别检索不同信息的问题，例如：</span>
+<span class="s2">                    * 示例：</span>
+<span class="s2">                        * 查询：比较 Milvus 和 Zilliz Cloud 的优缺点。</span>
+<span class="s2">                        * 策略：子查询检索</span>
+<span class="s2">            4.  **回溯问题检索：**</span>
+<span class="s2">                * 描述：将复杂的用户查询转化为更基础、更易于检索的问题，然后进行检索。</span>
+<span class="s2">                * 适用场景：适用于查询较为复杂，需要简化后才能有效检索的问题，例如：</span>
+<span class="s2">                    * 示例：</span>
+<span class="s2">                        * 查询：我有一个包含 100 亿条记录的数据集，想把它存储到 Milvus 中进行查询。可以吗？</span>
+<span class="s2">                        * 策略：回溯问题检索</span>
+
+<span class="s2">            根据用户查询 </span><span class="si">{query}</span><span class="s2">，直接返回最适合的策略名称，例如 &quot;直接检索&quot;。不要输出任何分析过程或其他内容。</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="p">,</span>
+            <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+    <span class="c1">#   定义方法，选择检索策略</span>
+    <span class="k">def</span> <span class="nf">select_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="c1">#   调用 LLM 获取检索策略</span>
+        <span class="n">strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_dashscope</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy_prompt_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;为查询 &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39; 选择的检索策略：</span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">strategy</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">ss</span> <span class="o">=</span> <span class="n">StrategySelector</span><span class="p">()</span>
+    <span class="n">ss</span><span class="o">.</span><span class="n">select_strategy</span><span class="p">(</span><span class="s1">&#39;你好吗&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="_4">实现细节<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong><code>__init__</code></strong>：<ul>
+<li><strong>作用</strong>：初始化DashScope客户端和策略选择Prompt。</li>
+<li><strong>逻辑</strong>：连接大语言模型API，准备Prompt模板。</li>
+</ul>
+</li>
+<li><strong><code>call_dashscope</code></strong>：<ul>
+<li><strong>作用</strong>：封装DashScope API调用，处理异常并返回模型输出。</li>
+<li><strong>逻辑</strong>：确保API调用的鲁棒性，记录错误日志。</li>
+</ul>
+</li>
+<li><strong><code>_get_strategy_prompt</code></strong>：<ul>
+<li><strong>作用</strong>：定义用于策略选择的Prompt模板。</li>
+<li><strong>设计逻辑</strong>：简洁描述四种策略及其适用场景，要求模型直接返回策略名称。</li>
+</ul>
+</li>
+<li><strong><code>select_strategy</code></strong>：<ul>
+<li><strong>作用</strong>：根据查询调用模型选择策略并返回。</li>
+<li><strong>逻辑</strong>：记录选择的策略，便于调试。</li>
+</ul>
+</li>
+</ol>
+<h3 id="_5">说明<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>动态选择</strong>：利用大语言模型的语义理解能力，灵活适应不同查询。</li>
+<li><strong>策略多样性</strong>：支持四种策略，覆盖常见查询场景。</li>
+<li><strong>效率</strong>：直接返回策略名称，避免冗余输出。</li>
+</ul>
+<hr />
+<h2 id="62-rag">6.2 RAG核心逻辑<a class="headerlink" href="#62-rag" title="Permanent link">&para;</a></h2>
+<h3 id="_6">功能概述<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p><code>rag_system.py</code>定义了<code>RAGSystem</code>类，整合系统的各个模块，完成从查询输入到答案生成的完整流程。它通过查询分类选择处理路径，利用检索策略优化文档检索，并结合上下文生成最终答案。</p>
+<h3 id="_7">代码示例<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># core/rag_system.py 源码</span>
+<span class="kn">from</span> <span class="nn">prompts</span> <span class="kn">import</span> <span class="n">RAGPrompts</span>
+<span class="c1">#   导入 time 模块，用于计算时间</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">base</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">query_classifier</span> <span class="kn">import</span> <span class="n">QueryClassifier</span>  <span class="c1">#   导入查询分类器</span>
+<span class="kn">from</span> <span class="nn">strategy_selector</span> <span class="kn">import</span> <span class="n">StrategySelector</span>  <span class="c1">#   导入策略选择器</span>
+
+<span class="n">conf</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
+
+<span class="c1">#   定义 RAGSystem 类，封装 RAG 系统的核心逻辑</span>
+<span class="k">class</span> <span class="nc">RAGSystem</span><span class="p">:</span>
+    <span class="c1">#   初始化方法，设置 RAG 系统的基本参数</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_store</span><span class="p">,</span> <span class="n">llm</span><span class="p">):</span>
+        <span class="c1">#   设置向量数据库对象</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span> <span class="o">=</span> <span class="n">vector_store</span>
+        <span class="c1">#   设置大语言模型调用函数</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm</span> <span class="o">=</span> <span class="n">llm</span>
+        <span class="c1">#   获取 RAG 提示模板</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rag_prompt</span> <span class="o">=</span> <span class="n">RAGPrompts</span><span class="o">.</span><span class="n">rag_prompt</span><span class="p">()</span>
+        <span class="c1">#   初始化查询分类器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query_classifier</span> <span class="o">=</span> <span class="n">QueryClassifier</span><span class="p">(</span><span class="n">model_path</span><span class="o">=</span><span class="s1">&#39;./core/bert_query_classifier&#39;</span><span class="p">)</span>
+        <span class="c1">#   初始化策略选择器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strategy_selector</span> <span class="o">=</span> <span class="n">StrategySelector</span><span class="p">()</span>
+
+    <span class="c1">#   定义私有方法，使用假设文档进行检索（HyDE）</span>
+    <span class="k">def</span> <span class="nf">_retrieve_with_hyde</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;使用 HyDE 策略进行检索 (查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+        <span class="c1">#   获取假设问题生成的 Prompt 模板</span>
+        <span class="n">hyde_prompt_template</span> <span class="o">=</span> <span class="n">RAGPrompts</span><span class="o">.</span><span class="n">hyde_prompt</span><span class="p">()</span> <span class="c1"># 使用 template 后缀区分</span>
+        <span class="c1">#   调用大语言模型生成假设答案</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hypo_answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">(</span><span class="n">hyde_prompt_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HyDE 生成的假设答案: &#39;</span><span class="si">{</span><span class="n">hypo_answer</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="c1">#   使用假设答案进行检索，并返回检索结果</span>
+            <span class="c1">#   注意：HyDE 通常只用于生成检索向量，不一定需要 rerank 这一步，但这里复用了</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span><span class="o">.</span><span class="n">hybrid_search_with_rerank</span><span class="p">(</span>
+                <span class="n">hypo_answer</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">RETRIEVAL_K</span> <span class="c1"># 使用 K 而非 M</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HyDE 策略执行失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+
+    <span class="c1">#   定义私有方法，使用子查询进行检索</span>
+    <span class="k">def</span> <span class="nf">_retrieve_with_subqueries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;使用子查询策略进行检索 (查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+        <span class="c1">#   获取子查询生成的 Prompt 模板</span>
+        <span class="n">subquery_prompt_template</span> <span class="o">=</span> <span class="n">RAGPrompts</span><span class="o">.</span><span class="n">subquery_prompt</span><span class="p">()</span> <span class="c1"># 使用 template 后缀区分</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#   调用大语言模型生成子查询列表</span>
+            <span class="n">subqueries_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">(</span><span class="n">subquery_prompt_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">subqueries</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">subqueries_text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;生成的子查询: </span><span class="si">{</span><span class="n">subqueries</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">subqueries</span><span class="p">:</span>
+                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;未能生成有效的子查询&quot;</span><span class="p">)</span>
+                 <span class="k">return</span> <span class="p">[]</span>
+
+            <span class="c1">#   初始化空列表，用于存储所有子查询的检索结果</span>
+            <span class="n">all_docs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1">#   遍历每个子查询</span>
+            <span class="k">for</span> <span class="n">sub_q</span> <span class="ow">in</span> <span class="n">subqueries</span><span class="p">:</span>
+                <span class="c1">#   使用子查询进行检索，并将结果添加到列表中</span>
+                <span class="c1">#   这里对每个子查询都执行了 hybrid search + rerank，开销可能较大</span>
+                <span class="n">docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span><span class="o">.</span><span class="n">hybrid_search_with_rerank</span><span class="p">(</span>
+                    <span class="n">sub_q</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">RETRIEVAL_K</span> <span class="c1"># 使用 K</span>
+                <span class="p">)</span>
+                <span class="n">all_docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;子查询 &#39;</span><span class="si">{</span><span class="n">sub_q</span><span class="si">}</span><span class="s2">&#39; 检索到 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个文档&quot;</span><span class="p">)</span>
+
+            <span class="c1">#   对所有检索结果进行去重 (基于对象内存地址，如果 Document 内容相同但对象不同则无法去重)</span>
+            <span class="c1">#   更可靠的去重方式是基于文档内容或 ID</span>
+            <span class="n">unique_docs_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span><span class="p">:</span> <span class="n">doc</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">all_docs</span><span class="p">}</span> <span class="c1"># 基于内容去重</span>
+            <span class="n">unique_docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">unique_docs_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;所有子查询共检索到 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_docs</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个文档, 去重后剩 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_docs</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个&quot;</span><span class="p">)</span>
+            <span class="c1">#   返回去重后的文档，限制数量 (是否需要在此处限制? retrieve_and_merge 末尾会限制)</span>
+            <span class="c1"># return unique_docs[: Config.CANDIDATE_M]</span>
+            <span class="k">return</span> <span class="n">unique_docs</span> <span class="c1"># 返回所有唯一文档，让 retrieve_and_merge 处理数量</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;子查询策略执行失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1">#   定义私有方法，使用回溯问题进行检索</span>
+    <span class="k">def</span> <span class="nf">_retrieve_with_backtracking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;使用回溯问题策略进行检索 (查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+        <span class="c1">#   获取回溯问题生成的 Prompt 模板</span>
+        <span class="n">backtrack_prompt_template</span> <span class="o">=</span> <span class="n">RAGPrompts</span><span class="o">.</span><span class="n">backtracking_prompt</span><span class="p">()</span> <span class="c1"># 使用 template 后缀区分</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#   调用大语言模型生成回溯问题</span>
+            <span class="n">simplified_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">(</span><span class="n">backtrack_prompt_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;生成的回溯问题: &#39;</span><span class="si">{</span><span class="n">simplified_query</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="c1">#   使用回溯问题进行检索，并返回检索结果</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span><span class="o">.</span><span class="n">hybrid_search_with_rerank</span><span class="p">(</span>
+                <span class="n">simplified_query</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">RETRIEVAL_K</span> <span class="c1"># 使用 K</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;回溯问题策略执行失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1">#   定义方法，检索并合并相关文档</span>
+    <span class="k">def</span> <span class="nf">retrieve_and_merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">source_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1">#   新增 strategy 参数</span>
+        <span class="c1">#   如果未指定检索策略，则使用策略选择器选择</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">strategy</span><span class="p">:</span>
+            <span class="n">strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_selector</span><span class="o">.</span><span class="n">select_strategy</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="c1">#   根据检索策略选择不同的检索方式</span>
+        <span class="n">ranked_sub_chunks</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># 初始化</span>
+        <span class="k">if</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;回溯问题检索&quot;</span><span class="p">:</span>
+            <span class="n">ranked_sub_chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieve_with_backtracking</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;子查询检索&quot;</span><span class="p">:</span>
+            <span class="n">ranked_sub_chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieve_with_subqueries</span><span class="p">(</span><span class="n">query</span><span class="p">)</span> <span class="c1"># 返回的是唯一文档列表</span>
+             <span class="c1"># 注意：子查询返回的是已 rerank 过的父文档或子块列表，后续合并逻辑可能需要调整</span>
+             <span class="c1"># 当前实现中，子查询返回的是初步检索（可能已rerank）的块，再进行合并</span>
+        <span class="k">elif</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;假设问题检索&quot;</span><span class="p">:</span>
+            <span class="n">ranked_sub_chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retrieve_with_hyde</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1">#   默认或“直接检索”</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;使用直接检索策略 (查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+            <span class="n">ranked_sub_chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_store</span><span class="o">.</span><span class="n">hybrid_search_with_rerank</span><span class="p">(</span>
+                <span class="n">query</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">RETRIEVAL_K</span><span class="p">,</span> <span class="n">source_filter</span><span class="o">=</span><span class="n">source_filter</span>
+            <span class="p">)</span> <span class="c1"># 注意 hybrid_search_with_rerank 返回的是 rerank 后的父文档</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;策略 &#39;</span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s2">&#39; 检索到 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ranked_sub_chunks</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个候选文档 (可能已是父文档)&quot;</span><span class="p">)</span>
+        <span class="n">final_context_docs</span> <span class="o">=</span> <span class="n">ranked_sub_chunks</span><span class="p">[:</span><span class="n">conf</span><span class="o">.</span><span class="n">CANDIDATE_M</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;最终选取 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">final_context_docs</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个文档作为上下文&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_context_docs</span>
+
+    <span class="c1">#   定义方法，生成答案</span>
+    <span class="k">def</span> <span class="nf">generate_answer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">source_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1">#   记录查询开始时间</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;开始处理查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;, 学科过滤: </span><span class="si">{</span><span class="n">source_filter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1">#   判断查询类型</span>
+        <span class="n">query_category</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_classifier</span><span class="o">.</span><span class="n">predict_category</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;查询分类结果：</span><span class="si">{</span><span class="n">query_category</span><span class="si">}</span><span class="s2"> (查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+
+        <span class="c1">#   如果查询属于“通用知识”类别，则直接使用 LLM 回答</span>
+        <span class="k">if</span> <span class="n">query_category</span> <span class="o">==</span> <span class="s2">&quot;通用知识&quot;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;查询为通用知识，直接调用 LLM&quot;</span><span class="p">)</span>
+            <span class="n">prompt_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rag_prompt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">context</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">question</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">phone</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">CUSTOMER_SERVICE_PHONE</span>
+            <span class="p">)</span>  <span class="c1">#   不使用上下文</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">(</span><span class="n">prompt_input</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;直接调用 LLM 失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;抱歉，处理您的通用知识问题时出错。请联系人工客服：</span><span class="si">{</span><span class="n">conf</span><span class="o">.</span><span class="n">CUSTOMER_SERVICE_PHONE</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">processing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;通用知识查询处理完成 (耗时: </span><span class="si">{</span><span class="n">processing_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s, 查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">answer</span>
+
+        <span class="c1">#   否则，进行 RAG 检索并生成答案</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;查询为专业咨询，执行 RAG 流程&quot;</span><span class="p">)</span>
+        <span class="c1">#   选择检索策略</span>
+        <span class="n">strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_selector</span><span class="o">.</span><span class="n">select_strategy</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+        <span class="c1">#   检索相关文档</span>
+        <span class="n">context_docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_and_merge</span><span class="p">(</span>
+            <span class="n">query</span><span class="p">,</span> <span class="n">source_filter</span><span class="o">=</span><span class="n">source_filter</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span>
+        <span class="p">)</span>  <span class="c1">#   传递 strategy</span>
+
+        <span class="c1">#   准备上下文</span>
+        <span class="k">if</span> <span class="n">context_docs</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">context_docs</span><span class="p">])</span> <span class="c1"># 使用换行符分隔文档</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;构建上下文完成，包含 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">context_docs</span><span class="p">)</span><span class="si">}</span><span class="s2"> 个文档块&quot;</span><span class="p">)</span>
+            <span class="c1"># logger.debug(f&quot;上下文内容:\n{context[:500]}...&quot;) # Debug 日志可以打印部分上下文</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;未检索到相关文档，上下文为空&quot;</span><span class="p">)</span>
+
+        <span class="c1">#   构造 Prompt，调用大语言模型生成答案</span>
+        <span class="n">prompt_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rag_prompt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">question</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">phone</span><span class="o">=</span><span class="n">conf</span><span class="o">.</span><span class="n">CUSTOMER_SERVICE_PHONE</span>
+        <span class="p">)</span>
+        <span class="c1"># logger.debug(f&quot;最终生成的 Prompt:\n{prompt_input}&quot;) # Debug 日志</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm</span><span class="p">(</span><span class="n">prompt_input</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;调用 LLM 生成最终答案失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;抱歉，处理您的专业咨询问题时出错。请联系人工客服：</span><span class="si">{</span><span class="n">conf</span><span class="o">.</span><span class="n">CUSTOMER_SERVICE_PHONE</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+        <span class="c1">#   记录查询处理完成的日志</span>
+        <span class="n">processing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;查询处理完成 (耗时: </span><span class="si">{</span><span class="n">processing_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s, 查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">answer</span>
+</code></pre></div>
+<h3 id="_8">实现细节<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>init</strong>： <ul>
+<li><strong>作用</strong>：初始化RAG系统，整合向量存储、大语言模型和其他核心组件。</li>
+<li><strong>依赖</strong>：依赖VectorStore、RAGPrompts、QueryClassifier和StrategySelector。</li>
+</ul>
+</li>
+<li><strong>_retrieve_with_hyde</strong>： <ul>
+<li><strong>作用</strong>：生成假设答案并调用混合检索，适合抽象查询。</li>
+<li><strong>逻辑</strong>：使用hyde_prompt生成假设答案，传递给hybrid_search_with_rerank。</li>
+</ul>
+</li>
+<li><strong>_retrieve_with_subqueries</strong>： <ul>
+<li><strong>作用</strong>：分解查询为子查询，分别检索并去重。</li>
+<li><strong>逻辑</strong>：使用subquery_prompt分解查询，合并结果并限制数量。</li>
+</ul>
+</li>
+<li><strong>_retrieve_with_backtracking</strong>： <ul>
+<li><strong>作用</strong>：简化查询后检索，降低复杂度。</li>
+<li><strong>逻辑</strong>：使用backtracking_prompt简化查询，调用混合检索。</li>
+</ul>
+</li>
+<li><strong>retrieve_and_merge</strong>： <ul>
+<li><strong>作用</strong>：根据策略选择执行检索，直接返回结果。</li>
+<li><strong>优化</strong>：移除冗余的合并逻辑，直接使用hybrid_search_with_rerank的结果（去重的父文档）。</li>
+</ul>
+</li>
+<li><strong>generate_answer</strong>： <ul>
+<li><strong>作用</strong>：整合分类、检索和生成，输出最终答案。</li>
+<li>流程： <ul>
+<li>使用QueryClassifier判断查询类型。</li>
+<li>“通用知识”直接生成答案，“专业咨询”触发检索。</li>
+<li>结合上下文调用rag_prompt生成回答。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="63">6.3 完整流程的整合<a class="headerlink" href="#63" title="Permanent link">&para;</a></h2>
+<h3 id="_9">从查询到回答的流程<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>输入处理</strong>：<ul>
+<li><code>QueryClassifier</code>分类查询，决定是否需要检索。</li>
+</ul>
+</li>
+<li><strong>策略选择</strong>：<ul>
+<li><code>StrategySelector</code>根据查询选择最佳检索策略。</li>
+</ul>
+</li>
+<li><strong>文档检索</strong>：<ul>
+<li>根据策略调用<code>VectorStore</code>的混合检索，获取相关文档。</li>
+</ul>
+</li>
+<li><strong>答案生成</strong>：<ul>
+<li>使用<code>RAGPrompts</code>的模板，结合上下文调用大语言模型生成答案。</li>
+</ul>
+</li>
+<li><strong>输出</strong>：<ul>
+<li>返回最终答案，并记录日志。</li>
+</ul>
+</li>
+</ol>
+<h3 id="_10">代码示例（整合逻辑）<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 示例：完整查询处理</span>
+<span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;AI学科学费是多少？&quot;</span>
+<span class="n">rag_system</span> <span class="o">=</span> <span class="n">RAGSystem</span><span class="p">(</span><span class="n">vector_store</span><span class="p">,</span> <span class="n">llm</span><span class="p">)</span>
+<span class="n">answer</span> <span class="o">=</span> <span class="n">rag_system</span><span class="o">.</span><span class="n">generate_answer</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="_11">说明<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>端到端设计</strong>：从输入到输出无缝衔接。</li>
+<li><strong>智能优化</strong>：通过分类和策略选择减少不必要计算。</li>
+</ul>
+<hr />
+<h2 id="_12">章节总结<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p>本章节深入探讨了<code>strategy_selector.py</code>和<code>rag_system.py</code>：</p>
+<ul>
+<li><strong>strategy_selector.py</strong>：通过大语言模型动态选择检索策略（直接检索、HyDE、子查询、回溯），优化检索输入。</li>
+</ul>
+<ul>
+<li><strong><code>rag_system.py</code></strong>：整合查询分类、检索策略、向量存储和Prompt管理，完成从查询到回答的完整RAG流程。</li>
+<li><strong>协同作用</strong>：两者结合实现了灵活、高效的查询处理，确保系统能够准确响应用户需求。</li>
+</ul>
+<p>学习者通过本章节掌握了RAG系统的核心工作机制，为后续的系统运行和扩展奠定了基础。</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="05-prompts%E8%AE%BE%E8%AE%A1%E4%B8%8Equery%E6%84%8F%E5%9B%BE%E8%AF%86%E5%88%AB.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 4.5 prompts设计与query意图识别" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              4.5 prompts设计与query意图识别
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="07-RAG%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 4.7 RAG系统运行" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              4.7 RAG系统运行
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

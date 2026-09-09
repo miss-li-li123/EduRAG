@@ -1,0 +1,1190 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>5.3 RAG评估数据集的构造(扩展) - EduRAG智慧回答项目V1.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#rag" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-header__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EduRAG智慧回答项目V1.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              5.3 RAG评估数据集的构造(扩展)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-nav__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    EduRAG智慧回答项目V1.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章:项目背景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章:项目背景" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章:项目背景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF/01-RAG%E7%B3%BB%E7%BB%9F%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1.1 项目背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章:项目工具介绍
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章:项目工具介绍" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章:项目工具介绍
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/01-Ollama%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        2.1 Ollama大模型管理工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/02-LangChain%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" class="md-nav__link">
+        2.2 LangChain基础知识
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/03-Milvus%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" class="md-nav__link">
+        2.3 Mirvus向量数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/Milvus%E5%92%8CRedis%E7%9A%84%E5%AE%89%E8%A3%85%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        2.3 Milvus和Redis的安装(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章:基于Mysql数据库构建问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章:基于Mysql数据库构建问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章:基于Mysql数据库构建问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01.Python%E6%97%A5%E5%BF%97%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.1 Python日志介绍与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02.BM25%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.2 BM25算法简介与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03.Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%80%E4%BB%8B%E4%B8%8E%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        3.3 Redis数据库简介与使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04.%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F.html" class="md-nav__link">
+        3.4 基于Mysql数据库实现问答系统
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章:基于Milvus数据库构建RAG问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章:基于Milvus数据库构建RAG问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章:基于Milvus数据库构建RAG问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%B5%81%E7%A8%8B.html" class="md-nav__link">
+        4.1 整体架构与工程流程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02-%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.2 基础模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.3 文档处理模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04-%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8.html" class="md-nav__link">
+        4.4 向量存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/05-prompts%E8%AE%BE%E8%AE%A1%E4%B8%8Equery%E6%84%8F%E5%9B%BE%E8%AF%86%E5%88%AB.html" class="md-nav__link">
+        4.5 prompts设计与query意图识别
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/06-%E6%A3%80%E7%B4%A2%E7%AD%96%E7%95%A5%E4%B8%8ERAG%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" class="md-nav__link">
+        4.6 检索策略与RAG系统设计
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/07-RAG%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C.html" class="md-nav__link">
+        4.7 RAG系统运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        4.8 文档解析工具(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章:RAG系统评估
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章:RAG系统评估" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章:RAG系统评估
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01-RAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        5.1 RAG系统评估工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02-%E5%AE%9E%E7%8E%B0EduRAG%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BC%B0.html" class="md-nav__link">
+        5.2 实现EduRAG系统的评估
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          5.3 RAG评估数据集的构造(扩展)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="03-RAG%E8%AF%84%E4%BC%B0%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E6%9E%84%E9%80%A0%28%E6%89%A9%E5%B1%95%29.html" class="md-nav__link md-nav__link--active">
+        5.3 RAG评估数据集的构造(扩展)
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 引言
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-rag" class="md-nav__link">
+    2 结构化评估 RAG 的性能
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-agents-rag" class="md-nav__link">
+    3 使用 Agents 完成 RAG 性能基准测试
+  </a>
+  
+    <nav class="md-nav" aria-label="3 使用 Agents 完成 RAG 性能基准测试">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 生成测试样本
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 检查样本质量
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 设置评估代理
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 本节小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章:融合Mysql的RAG系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章:融合Mysql的RAG系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章:融合Mysql的RAG系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/01-%E8%9E%8D%E5%90%88FQA%E5%92%8C%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.1 融合FQA和知识库查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/02-%E5%A2%9E%E5%BC%BA%E5%9E%8BFAQ%E4%B8%8E%E7%9F%A5%E8%AF%86%E5%BA%93%E8%9E%8D%E5%90%88%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.2 增强型FAQ与知识库融合查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/03-%E7%B3%BB%E7%BB%9FAPI%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91%E5%8F%8Awebui%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        6.3 系统API接口开发及webui应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/FastAPI%E5%92%8CFlask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        6.4 FastAPI和Flask的区别和联系(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1 引言
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-rag" class="md-nav__link">
+    2 结构化评估 RAG 的性能
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-agents-rag" class="md-nav__link">
+    3 使用 Agents 完成 RAG 性能基准测试
+  </a>
+  
+    <nav class="md-nav" aria-label="3 使用 Agents 完成 RAG 性能基准测试">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31" class="md-nav__link">
+    3.1 生成测试样本
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    3.2 检查样本质量
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33" class="md-nav__link">
+    3.3 设置评估代理
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4 本节小结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="rag">构造 RAG 评估数据集<a class="headerlink" href="#rag" title="Permanent link">&para;</a></h1>
+<h2 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li>掌握RAG性能评估的指标</li>
+<li>实现RAG评估数据集的构造</li>
+</ul>
+<h2 id="1">1 引言<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>优化 RAG 不是“炼丹”，需要系统的方法。当涉及到如何优化 RAG（Retrieval-Augmented Generation）性能时，许多人往往采取“试错”的方法：“我尝试了一个新模块，问了几个问题，答案看起来还行…”。这样的定性评估方式虽然直观，但很难得出可靠的改进结论。</p>
+<p>优化 RAG 性能需要采用科学实验的方式。这意味着我们必须设计量化的评估指标，并准备高质量的评估数据集。通过结构化的实验和评估方法，我们才能明确什么样的调整会真正提升性能。</p>
+<h2 id="2-rag">2 结构化评估 RAG 的性能<a class="headerlink" href="#2-rag" title="Permanent link">&para;</a></h2>
+<p>RAG 系统的性能评估可以从以下两个主要方面进行：</p>
+<ul>
+<li>检索评估（Retrieval Evaluation）： 检索的段落是否相关？</li>
+</ul>
+<ul>
+<li>生成评估（Generation Evaluation）： 模型生成的答案是否恰当？</li>
+</ul>
+<p>对于端到端的评估，我们通常关注以下四类指标：</p>
+<ul>
+<li>Groundedness（可靠性）： 检索评估中的关键指标，评估检索的段落是否为生成的答案提供了可靠支持，避免幻觉（hallucinations）或无关信息。这是生成评估的基础。</li>
+<li>Completeness（完整性）： 生成评估的核心指标，用于评估模型的回答是否全面覆盖了用户问题的所有方面，同时间接反映了检索阶段的信息充分性。</li>
+<li>Utilization（利用率）： 连接检索和生成的桥梁指标，用来评估检索到的信息是否被有效利用。如果利用率低，可能意味着检索到的段落与问题无关，或者模型未充分使用这些段落。</li>
+<li>Relevance（相关性）： 检索评估的直接反映，衡量检索到的段落与用户问题之间的相关性，同时也会影响生成评估的整体表现。</li>
+</ul>
+<p>这些指标需要基于高质量的测试样本和严格的评估流程。</p>
+<h2 id="3-agents-rag">3 使用 Agents 完成 RAG 性能基准测试<a class="headerlink" href="#3-agents-rag" title="Permanent link">&para;</a></h2>
+<p>在开始具体流程前，我们需要了解三个代理（Agents）的协作关系：</p>
+<ul>
+<li>测试样本代理（Test Sample Agent）： 用于生成和准备测试数据，这些数据构成了评估系统的基础。</li>
+<li>样本质量评价代理（Critique Agent）： 对测试样本进行质量审核，确保最终用于评估的数据具备高准确性和清晰性。</li>
+<li>评估代理（Evaluation Agent）： 负责根据设计的指标对系统性能进行量化评估。这些评估指标覆盖了检索和生成的多个层面。</li>
+</ul>
+<p>通过这三种代理的协作，可以建立一个系统化的性能基准测试流程，帮助开发者深入理解和优化 RAG 系统。</p>
+<h3 id="31">3.1 生成测试样本<a class="headerlink" href="#31" title="Permanent link">&para;</a></h3>
+<p>为了评估 RAG 系统的性能，首先需要使用测试样本代理（Test Sample Agent） 生成测试样本。这些代理可以自动生成一组高质量的 QA 样本（问题与答案对）。例如，可以先生成 10 个样本用于快速测试，然后从公共资源库加载更多样本，或者生成更大规模的数据集以供全面评估。</p>
+<p>但如果针对特定的知识库，建议生成至少 200 个样本，因为后续通过评价代理过滤掉低质量问题后，最终能保留的有效样本约为一半。</p>
+<p>以下是生成QA样本的提示词：</p>
+<div class="highlight"><pre><span></span><code><span class="na">QA_generation_prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;  </span><span class="w"></span>
+<span class="err">你的任务是：根据给定的上下文，编写一个事实型问题及其答案。</span><span class="w">  </span>
+<span class="err">你提出的事实型问题应能通过上下文中的具体、简明的事实信息来回答。</span><span class="w">  </span>
+<span class="err">你的问题风格应与用户在搜索引擎中提出的问题类似。</span><span class="w">  </span>
+<span class="err">这意味着你提出的问题**不能**包含“根据段落”或“根据上下文”等措辞。</span><span class="w">  </span>
+
+<span class="err">请按以下格式给出你的输出：</span><span class="w">  </span>
+
+<span class="na">输出</span><span class="o">:</span><span class="s">::  </span><span class="w"></span>
+<span class="err">事实型问题：（你的问题）</span><span class="w">  </span>
+<span class="err">答案：（你对该问题的回答）</span><span class="w">  </span>
+
+<span class="err">以下是上下文内容：</span><span class="w">  </span>
+
+<span class="err">上下文：{context}\n</span><span class="w">  </span>
+<span class="na">输出</span><span class="o">:</span><span class="s">::&quot;&quot;&quot;</span><span class="w"></span>
+</code></pre></div>
+<h3 id="32">3.2 检查样本质量<a class="headerlink" href="#32" title="Permanent link">&para;</a></h3>
+<p>自动生成的样本可能存在质量问题，因此需要引入样本质量评价代理（Critique Agents） 来对问题进行质量审查。这些代理会根据多种标准对每个问题评分，比如：</p>
+<ul>
+<li>问题是否清晰、无二义性？</li>
+<li>问题是否适合特定知识领域？</li>
+</ul>
+<p>我们通过这些代理对问题进行系统评分。当任意一个代理的评分过低时，直接剔除该问题。</p>
+<blockquote>
+<p>提示： 当让代理生成分数时，先要求其输出理由，再给出最终评分。这种方式不仅能帮助我们验证评分结果，还能促使代理在回答过程中进行更深入的思考，从而提高评分的准确性。</p>
+</blockquote>
+<p>以下是评估样本质量的提示词：</p>
+<div class="highlight"><pre><span></span><code><span class="na">question_groundedness_critique_prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;  </span><span class="w"></span>
+<span class="err">你将获得一个上下文和一个问题。</span><span class="w">  </span>
+<span class="err">你的任务是给出一个“总评分”，评估该问题是否能够通过给定的上下文明确无歧义地回答。</span><span class="w">  </span>
+<span class="err">请在1到5分之间进行评分，其中1表示完全无法根据上下文回答该问题，5表示能够清晰且无歧义地根据上下文回答该问题。</span><span class="w">  </span>
+
+<span class="err">请按以下格式给出你的回答：</span><span class="w">  </span>
+
+<span class="na">回答</span><span class="o">:</span><span class="s">::  </span><span class="w"></span>
+<span class="err">评价：（你对评分的理由，文本形式）</span><span class="w">  </span>
+<span class="err">总评分：（你给出的评分，范围为1到5的数字）</span><span class="w">  </span>
+
+<span class="err">你的回答**必须包含**“评价”和“总评分”的内容。</span><span class="w">  </span>
+
+<span class="err">现在是问题和上下文内容：</span><span class="w">  </span>
+
+<span class="err">问题：{question}\n</span><span class="w">  </span>
+<span class="err">上下文：{context}\n</span><span class="w">  </span>
+<span class="na">回答</span><span class="o">:</span><span class="s">:: &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="na">question_relevance_critique_prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;  </span><span class="w"></span>
+<span class="err">你将获得一个问题。</span><span class="w">  </span>
+<span class="err">你的任务是给出一个“总评分”，表示该问题对于正在使用</span><span class="w"> </span><span class="err">Hugging</span><span class="w"> </span><span class="err">Face</span><span class="w"> </span><span class="err">生态构建自然语言处理应用的机器学习开发者来说有多有用。</span><span class="w">  </span>
+<span class="err">请在1到5分之间进行评分，其中1表示完全没有用，5表示非常有用。</span><span class="w">  </span>
+
+<span class="err">请按以下格式给出你的回答：</span><span class="w">  </span>
+
+<span class="na">回答</span><span class="o">:</span><span class="s">::  </span><span class="w"></span>
+<span class="err">评价：（你对评分的理由，文本形式）</span><span class="w">  </span>
+<span class="err">总评分：（你给出的评分，范围为1到5的数字）</span><span class="w">  </span>
+
+<span class="err">你的回答**必须包含**“评价”和“总评分”的内容。</span><span class="w">  </span>
+
+<span class="err">现在是该问题：</span><span class="w">  </span>
+
+<span class="err">问题：{question}\n</span><span class="w">  </span>
+<span class="na">回答</span><span class="o">:</span><span class="s">:: &quot;&quot;&quot;</span><span class="w"></span>
+
+<span class="na">question_standalone_critique_prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;  </span><span class="w"></span>
+<span class="err">你将获得一个问题。</span><span class="w">  </span>
+<span class="err">你的任务是给出一个“总评分”，评估该问题在多大程度上是独立于上下文的。</span><span class="w">  </span>
+<span class="err">请在1到5分之间进行评分，其中1表示该问题需要额外信息才能理解，5表示该问题本身就可以被理解。</span><span class="w">  </span>
+<span class="err">例如，如果问题提到了“在该文档中”或“在该上下文中”等字样，那么评分必须为1。</span><span class="w">  </span>
+<span class="err">即使问题包含专业术语或缩写（如</span><span class="w"> </span><span class="err">Gradio、Hub、Hugging</span><span class="w"> </span><span class="err">Face</span><span class="w"> </span><span class="err">或</span><span class="w"> </span><span class="err">Space），只要操作人员可以通过文档理解其含义，评分也可以是5。</span><span class="w">  </span>
+
+<span class="err">例如，“ViT</span><span class="w"> </span><span class="err">模型是从哪个检查点导入的？”</span><span class="w"> </span><span class="err">应该得分为</span><span class="w"> </span><span class="err">1，因为它隐含了上下文的依赖，因此不具有独立性。</span><span class="w">  </span>
+
+<span class="err">请按以下格式给出你的回答：</span><span class="w">  </span>
+
+<span class="na">回答</span><span class="o">:</span><span class="s">::  </span><span class="w"></span>
+<span class="err">评价：（你对评分的理由，文本形式）</span><span class="w">  </span>
+<span class="err">总评分：（你给出的评分，范围为1到5的数字）</span><span class="w">  </span>
+
+<span class="err">你的回答**必须包含**“评价”和“总评分”的内容。</span><span class="w">  </span>
+
+<span class="err">现在是该问题：</span><span class="w">  </span>
+
+<span class="err">问题：{question}\n</span><span class="w">  </span>
+<span class="na">回答</span><span class="o">:</span><span class="s">:: &quot;&quot;&quot;</span><span class="w"></span>
+</code></pre></div>
+<h3 id="33">3.3 设置评估代理<a class="headerlink" href="#33" title="Permanent link">&para;</a></h3>
+<p>最后，我们需要评估 RAG 系统在测试数据集上的表现。可以通过以下步骤完成：</p>
+<ul>
+<li>
+<p>选择评估指标：</p>
+<ul>
+<li>我们重点关注faithfulness（可靠性） 作为主要指标，因为它能全面反映系统的端到端性能。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>选择评估模型：
+  使用 GPT-4 作为评估代理，或者尝试其他性能良好的模型，如 kaist-ai/prometheus-13b-v1.0 或 BAAI/JudgeLM-33B-v1.0。</li>
+</ul>
+<ul>
+<li>
+<p>设计评估提示词：
+  提示词需要详细描述每个指标的评分标准（例如 1-5 分），并要求模型在评分前先输出评分依据。</p>
+<blockquote>
+<p>提示： 提供详细的评分标准有助于评估代理保持一致性，避免因模糊标准导致评分结果的波动。</p>
+</blockquote>
+</li>
+</ul>
+<p>以下是 RAG 评估模型的提示词：</p>
+<div class="highlight"><pre><span></span><code><span class="n">EVALUATION_PROMPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;### 任务描述：</span>
+<span class="s2">提供了一条指令（可能包含输入）、待评估的回答、得分为 5 的参考答案，以及表示评估标准的评分细则。  </span>
+<span class="s2">1. 根据给定的评分细则，严格评估回答的质量，撰写详细的反馈，不进行一般性评价。  </span>
+<span class="s2">2. 在撰写反馈后，给出一个 1 到 5 的整数分数，需参考评分细则。  </span>
+<span class="s2">3. 输出格式应如下：“Feedback: {{针对标准的反馈}} [RESULT] {{1 到 5 的整数}}”  </span>
+<span class="s2">4. 请勿生成其他开场、结尾或解释内容。确保输出包含 [RESULT]。  </span>
+
+<span class="s2">### 待评估的指令：  </span>
+<span class="si">{instruction}</span><span class="s2">  </span>
+
+<span class="s2">### 待评估的回答：  </span>
+<span class="si">{response}</span><span class="s2">  </span>
+
+<span class="s2">### 参考答案（得分 5）：  </span>
+<span class="si">{reference_answer}</span><span class="s2">  </span>
+
+<span class="s2">### 评分细则：  </span>
+<span class="s2">[回答是否基于参考答案正确、准确且符合事实？]  </span>
+<span class="s2">得分 1：回答完全不正确、不准确和/或不符合事实。  </span>
+<span class="s2">得分 2：回答大部分不正确、不准确和/或不符合事实。  </span>
+<span class="s2">得分 3：回答部分正确、准确和/或符合事实。  </span>
+<span class="s2">得分 4：回答大部分正确、准确且符合事实。  </span>
+<span class="s2">得分 5：回答完全正确、准确且符合事实。  </span>
+
+<span class="s2">### 反馈：&quot;&quot;&quot;</span>  
+
+<span class="kn">from</span> <span class="nn">langchain.prompts.chat</span> <span class="kn">import</span> <span class="p">(</span>  
+    <span class="n">ChatPromptTemplate</span><span class="p">,</span>  
+    <span class="n">HumanMessagePromptTemplate</span><span class="p">,</span>  
+<span class="p">)</span>  
+<span class="kn">from</span> <span class="nn">langchain.schema</span> <span class="kn">import</span> <span class="n">SystemMessage</span>  
+
+
+<span class="n">evaluation_prompt_template</span> <span class="o">=</span> <span class="n">ChatPromptTemplate</span><span class="o">.</span><span class="n">from_messages</span><span class="p">(</span>  
+    <span class="p">[</span>  
+        <span class="n">SystemMessage</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;You are a fair evaluator language model.&quot;</span><span class="p">),</span>  
+        <span class="n">HumanMessagePromptTemplate</span><span class="o">.</span><span class="n">from_template</span><span class="p">(</span><span class="n">EVALUATION_PROMPT</span><span class="p">),</span>  
+    <span class="p">]</span>  
+<span class="p">)</span>  
+</code></pre></div>
+<h2 id="4">4 本节小结<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<p>准备高质量的评估数据集是优化 RAG 性能的基础。通过引入生成代理和评价代理，我们可以建立一个系统化的评估流程，确保每个调整都有量化依据。这种基于数据驱动的方法不仅能帮助开发者快速迭代 RAG 系统，还能避免无效尝试导致的时间浪费。</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="02-%E5%AE%9E%E7%8E%B0EduRAG%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BC%B0.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 5.2 实现EduRAG系统的评估" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              5.2 实现EduRAG系统的评估
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/01-%E8%9E%8D%E5%90%88FQA%E5%92%8C%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9F%A5%E8%AF%A2.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 6.1 融合FQA和知识库查询" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              6.1 融合FQA和知识库查询
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

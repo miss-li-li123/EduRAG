@@ -1,0 +1,1289 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>数据集生成与优化 - EduRAG智慧回答项目V1.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-header__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EduRAG智慧回答项目V1.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              数据集生成与优化
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-nav__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    EduRAG智慧回答项目V1.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章:项目背景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章:项目背景" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章:项目背景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF/01-RAG%E7%B3%BB%E7%BB%9F%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1.1 项目背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章:项目工具介绍
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章:项目工具介绍" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章:项目工具介绍
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/01-Ollama%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        2.1 Ollama大模型管理工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/02-LangChain%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" class="md-nav__link">
+        2.2 LangChain基础知识
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/03-Milvus%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" class="md-nav__link">
+        2.3 Mirvus向量数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/Milvus%E5%92%8CRedis%E7%9A%84%E5%AE%89%E8%A3%85%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        2.3 Milvus和Redis的安装(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章:基于Mysql数据库构建问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章:基于Mysql数据库构建问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章:基于Mysql数据库构建问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01.Python%E6%97%A5%E5%BF%97%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.1 Python日志介绍与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02.BM25%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.2 BM25算法简介与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03.Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%80%E4%BB%8B%E4%B8%8E%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        3.3 Redis数据库简介与使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%89%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04.%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F.html" class="md-nav__link">
+        3.4 基于Mysql数据库实现问答系统
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章:基于Milvus数据库构建RAG问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章:基于Milvus数据库构建RAG问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章:基于Milvus数据库构建RAG问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%B5%81%E7%A8%8B.html" class="md-nav__link">
+        4.1 整体架构与工程流程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02-%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.2 基础模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.3 文档处理模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="04-%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8.html" class="md-nav__link">
+        4.4 向量存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="05-prompts%E8%AE%BE%E8%AE%A1%E4%B8%8Equery%E6%84%8F%E5%9B%BE%E8%AF%86%E5%88%AB.html" class="md-nav__link">
+        4.5 prompts设计与query意图识别
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="06-%E6%A3%80%E7%B4%A2%E7%AD%96%E7%95%A5%E4%B8%8ERAG%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" class="md-nav__link">
+        4.6 检索策略与RAG系统设计
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="07-RAG%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C.html" class="md-nav__link">
+        4.7 RAG系统运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        4.8 文档解析工具(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章:RAG系统评估
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章:RAG系统评估" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章:RAG系统评估
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/01-RAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        5.1 RAG系统评估工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/02-%E5%AE%9E%E7%8E%B0EduRAG%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BC%B0.html" class="md-nav__link">
+        5.2 实现EduRAG系统的评估
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/03-RAG%E8%AF%84%E4%BC%B0%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E6%9E%84%E9%80%A0%28%E6%89%A9%E5%B1%95%29.html" class="md-nav__link">
+        5.3 RAG评估数据集的构造(扩展)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章:融合Mysql的RAG系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章:融合Mysql的RAG系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章:融合Mysql的RAG系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/01-%E8%9E%8D%E5%90%88FQA%E5%92%8C%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.1 融合FQA和知识库查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/02-%E5%A2%9E%E5%BC%BA%E5%9E%8BFAQ%E4%B8%8E%E7%9F%A5%E8%AF%86%E5%BA%93%E8%9E%8D%E5%90%88%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.2 增强型FAQ与知识库融合查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/03-%E7%B3%BB%E7%BB%9FAPI%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91%E5%8F%8Awebui%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        6.3 系统API接口开发及webui应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/FastAPI%E5%92%8CFlask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        6.4 FastAPI和Flask的区别和联系(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    1.1 数据生成与优化
+  </a>
+  
+    <nav class="md-nav" aria-label="1.1 数据生成与优化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    功能概述
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    完整代码
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    实现细节
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    执行示例
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    1.2 数据集生成流程
+  </a>
+  
+    <nav class="md-nav" aria-label="1.2 数据集生成流程">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    生成流程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    代码示例（使用数据集）
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13" class="md-nav__link">
+    1.3 数据集特点与优化
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3 数据集特点与优化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    数据集特点
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    优化效果
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    章节总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="_1">数据集生成与优化<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">学习目标<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<ul>
+<li>1.掌握如何结合规则模板和 Qwen-Plus 模型生成高质量查询数据集。</li>
+<li>2.通过 tqdm 进度条监控生成进度，并实现分阶段数据保存。</li>
+</ul>
+<hr />
+<p><code>generate_query_dataset_hybrid.py</code> 是 EduRAG 系统中用于生成训练数据集的核心脚本，旨在为 <code>QueryClassifier</code> 提供 6000 条高质量数据（“通用知识”和“专业咨询”各 3000 条）。通过规则模板和 Qwen-Plus 模型的混合生成，结合进度条和分阶段保存，本脚本确保了生成效率和数据可靠性。本章节将详细讲解其功能、实现和应用。</p>
+<h2 id="11">1.1 数据生成与优化<a class="headerlink" href="#11" title="Permanent link">&para;</a></h2>
+<h3 id="_3">功能概述<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p><code>generate_query_dataset_hybrid.py</code> 提供以下功能：</p>
+<ul>
+<li><strong>规则生成</strong>：基于模板和同义词替换生成 3000 条数据（“通用知识”和“专业咨询”各 1500 条）。</li>
+<li><strong>大模型生成</strong>：利用 Qwen-Plus 生成 3000 条自然语言查询（各 1500 条）。</li>
+<li><strong>进度监控</strong>：通过 <code>tqdm</code> 进度条可视化每个生成阶段。</li>
+<li><strong>分阶段保存</strong>：每生成 1500 条数据保存一次，最终合并保存完整数据集。</li>
+<li><strong>数据集输出</strong>：生成均衡的 6000 条数据，保存为 JSON 文件。</li>
+</ul>
+<h3 id="_4">完整代码<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># generate_query_dataset_hybrid.py</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+<span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># 加载环境变量</span>
+<span class="n">load_dotenv</span><span class="p">()</span>
+
+<span class="c1"># 初始化Qwen-Plus客户端</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;DASHSCOPE_API_KEY&quot;</span><span class="p">),</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;DASHSCOPE_BASE_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;https://dashscope.aliyuncs.com/compatible-mode/v1&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># 同义词词典</span>
+<span class="n">synonym_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;什么&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;什么&quot;</span><span class="p">,</span> <span class="s2">&quot;啥是&quot;</span><span class="p">,</span> <span class="s2">&quot;如何解释&quot;</span><span class="p">,</span> <span class="s2">&quot;具体是什么&quot;</span><span class="p">,</span> <span class="s2">&quot;请解释&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;课程&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;课程&quot;</span><span class="p">,</span> <span class="s2">&quot;培训课程&quot;</span><span class="p">,</span> <span class="s2">&quot;课程安排&quot;</span><span class="p">,</span> <span class="s2">&quot;教学内容&quot;</span><span class="p">,</span> <span class="s2">&quot;课&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;学费&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;学费&quot;</span><span class="p">,</span> <span class="s2">&quot;费用&quot;</span><span class="p">,</span> <span class="s2">&quot;报名费&quot;</span><span class="p">,</span> <span class="s2">&quot;学习费用&quot;</span><span class="p">,</span> <span class="s2">&quot;价格&quot;</span><span class="p">,</span> <span class="s2">&quot;收费&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;大纲&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;大纲&quot;</span><span class="p">,</span> <span class="s2">&quot;课程内容&quot;</span><span class="p">,</span> <span class="s2">&quot;教学计划&quot;</span><span class="p">,</span> <span class="s2">&quot;讲义&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;师资&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;师资&quot;</span><span class="p">,</span> <span class="s2">&quot;教师团队&quot;</span><span class="p">,</span> <span class="s2">&quot;讲师阵容&quot;</span><span class="p">,</span> <span class="s2">&quot;师资力量&quot;</span><span class="p">,</span> <span class="s2">&quot;老师&quot;</span><span class="p">,</span> <span class="s2">&quot;讲师&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;培训&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;培训&quot;</span><span class="p">,</span> <span class="s2">&quot;辅导&quot;</span><span class="p">,</span> <span class="s2">&quot;学习计划&quot;</span><span class="p">,</span> <span class="s2">&quot;教育课程&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;在哪里&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;在哪里&quot;</span><span class="p">,</span> <span class="s2">&quot;位于何处&quot;</span><span class="p">,</span> <span class="s2">&quot;设在何地&quot;</span><span class="p">,</span> <span class="s2">&quot;在哪&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;介绍&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;介绍&quot;</span><span class="p">,</span> <span class="s2">&quot;说明&quot;</span><span class="p">,</span> <span class="s2">&quot;讲解&quot;</span><span class="p">,</span> <span class="s2">&quot;概述&quot;</span><span class="p">,</span> <span class="s2">&quot;讲讲&quot;</span><span class="p">,</span> <span class="s2">&quot;说说&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;请问&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;请问&quot;</span><span class="p">,</span> <span class="s2">&quot;能否告知&quot;</span><span class="p">,</span> <span class="s2">&quot;是否可以告诉我&quot;</span><span class="p">,</span> <span class="s2">&quot;麻烦说下&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;原理&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;原理&quot;</span><span class="p">,</span> <span class="s2">&quot;基本思想&quot;</span><span class="p">,</span> <span class="s2">&quot;工作机制&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;写一个&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;写一个&quot;</span><span class="p">,</span> <span class="s2">&quot;编写一个&quot;</span><span class="p">,</span> <span class="s2">&quot;生成一个&quot;</span><span class="p">,</span> <span class="s2">&quot;创建一个&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;等于多少&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;等于多少&quot;</span><span class="p">,</span> <span class="s2">&quot;是多少&quot;</span><span class="p">,</span> <span class="s2">&quot;结果是啥&quot;</span><span class="p">,</span> <span class="s2">&quot;得多少&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;如何&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;如何&quot;</span><span class="p">,</span> <span class="s2">&quot;怎样&quot;</span><span class="p">,</span> <span class="s2">&quot;咋样&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;需要&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;需要&quot;</span><span class="p">,</span> <span class="s2">&quot;要&quot;</span><span class="p">,</span> <span class="s2">&quot;得有&quot;</span><span class="p">,</span> <span class="s2">&quot;必须具备&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;基础&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;基础&quot;</span><span class="p">,</span> <span class="s2">&quot;前提&quot;</span><span class="p">,</span> <span class="s2">&quot;背景&quot;</span><span class="p">,</span> <span class="s2">&quot;基本知识&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">apply_synonym_variation</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">replace_prob</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;对文本进行同义词随机替换&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">synonyms</span> <span class="ow">in</span> <span class="n">synonym_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\b&quot;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;\b&quot;</span>
+        <span class="k">def</span> <span class="nf">repl</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">replace_prob</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">synonyms</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">repl</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span>
+
+<span class="c1"># 规则生成部分</span>
+<span class="k">def</span> <span class="nf">generate_generic_query_rule</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;规则生成通用知识查询&quot;&quot;&quot;</span>
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;什么</span><span class="si">{concept}</span><span class="s2">？&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;</span><span class="si">{concept}</span><span class="s2">的定义是什么？&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;请解释</span><span class="si">{concept}</span><span class="s2">的原理。&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;如何运用</span><span class="si">{concept}</span><span class="s2">？&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;计算</span><span class="si">{num1}</span><span class="s2">+</span><span class="si">{num2}</span><span class="s2">等于多少？&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;写一个</span><span class="si">{lang}</span><span class="s2">的</span><span class="si">{func}</span><span class="s2">函数&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;为什么</span><span class="si">{thing}</span><span class="s2">是</span><span class="si">{state}</span><span class="s2">？&quot;</span>
+    <span class="p">]</span>
+    <span class="n">concepts</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AI&quot;</span><span class="p">,</span> <span class="s2">&quot;Transformer模型&quot;</span><span class="p">,</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span> <span class="s2">&quot;递归&quot;</span><span class="p">,</span> <span class="s2">&quot;算法复杂度&quot;</span><span class="p">,</span> <span class="s2">&quot;数据结构&quot;</span><span class="p">,</span> <span class="s2">&quot;机器学习&quot;</span><span class="p">]</span>
+    <span class="n">langs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Python&quot;</span><span class="p">,</span> <span class="s2">&quot;Java&quot;</span><span class="p">,</span> <span class="s2">&quot;C++&quot;</span><span class="p">]</span>
+    <span class="n">funcs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;排序&quot;</span><span class="p">,</span> <span class="s2">&quot;计算&quot;</span><span class="p">,</span> <span class="s2">&quot;打印&quot;</span><span class="p">]</span>
+    <span class="n">things</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;太阳&quot;</span><span class="p">,</span> <span class="s2">&quot;水&quot;</span><span class="p">,</span> <span class="s2">&quot;风&quot;</span><span class="p">]</span>
+    <span class="n">states</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;热的&quot;</span><span class="p">,</span> <span class="s2">&quot;流动的&quot;</span><span class="p">,</span> <span class="s2">&quot;无形的&quot;</span><span class="p">]</span>
+    <span class="n">nums</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">templates</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;</span><span class="si">{concept}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+        <span class="n">replacements</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;concept&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">concepts</span><span class="p">)}</span>
+    <span class="k">elif</span> <span class="s2">&quot;</span><span class="si">{num1}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+        <span class="n">replacements</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;num1&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">nums</span><span class="p">),</span> <span class="s2">&quot;num2&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">nums</span><span class="p">)}</span>
+    <span class="k">elif</span> <span class="s2">&quot;</span><span class="si">{lang}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+        <span class="n">replacements</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;lang&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">langs</span><span class="p">),</span> <span class="s2">&quot;func&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">funcs</span><span class="p">)}</span>
+    <span class="k">elif</span> <span class="s2">&quot;</span><span class="si">{thing}</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">t</span><span class="p">:</span>
+        <span class="n">replacements</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;thing&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">things</span><span class="p">),</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">states</span><span class="p">)}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">replacements</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">replacements</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">apply_synonym_variation</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">generate_professional_query_rule</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;规则生成专业咨询查询&quot;&quot;&quot;</span>
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;请问</span><span class="si">{subject}</span><span class="s2">课程的学费是多少？&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;</span><span class="si">{subject}</span><span class="s2">的课程大纲是什么？&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;</span><span class="si">{subject}</span><span class="s2">培训的学习周期有多长？&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;请介绍一下</span><span class="si">{subject}</span><span class="s2">培训的主要项目内容。&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;请问</span><span class="si">{subject}</span><span class="s2">培训地点在哪里？&quot;</span>
+    <span class="p">]</span>
+    <span class="n">subjects</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;JAVA&quot;</span><span class="p">,</span> <span class="s2">&quot;AI&quot;</span><span class="p">,</span> <span class="s2">&quot;测试&quot;</span><span class="p">,</span> <span class="s2">&quot;Web前端&quot;</span><span class="p">,</span> <span class="s2">&quot;Python&quot;</span><span class="p">,</span> <span class="s2">&quot;大数据&quot;</span><span class="p">,</span> <span class="s2">&quot;DevOps&quot;</span><span class="p">]</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">templates</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">subjects</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">apply_synonym_variation</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+<span class="c1"># 大模型生成部分</span>
+<span class="k">def</span> <span class="nf">generate_with_qwen</span><span class="p">(</span><span class="n">prompt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;调用Qwen-Plus生成查询，添加超时控制&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">completion</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="s2">&quot;qwen-plus&quot;</span><span class="p">,</span>
+            <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">}],</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Qwen-Plus调用失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+<span class="k">def</span> <span class="nf">generate_generic_query_qwen</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;使用Qwen-Plus生成通用知识查询&quot;&quot;&quot;</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    你是一个用户，生成一个“通用知识”类的查询，涉及数学计算、代码生成/纠错、概念与原理或常识性问题。</span>
+<span class="s2">    示例：</span>
+<span class="s2">    - “3+5等于多少？”</span>
+<span class="s2">    - “写一个Python排序函数”</span>
+<span class="s2">    - “什么是神经网络？”</span>
+<span class="s2">    - “太阳为什么是热的？”</span>
+<span class="s2">    请生成一个类似的查询，直接返回查询文本，不要多余说明。</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">generate_with_qwen</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">generate_professional_query_qwen</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;使用Qwen-Plus生成专业咨询查询&quot;&quot;&quot;</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    你是一个用户，生成一个“专业咨询”类的查询，涉及IT教育培训（如课程详情、师资、费用、周期、地点等）。</span>
+<span class="s2">    示例：</span>
+<span class="s2">    - “JAVA课程费用多少？”</span>
+<span class="s2">    - “AI培训有哪些老师？”</span>
+<span class="s2">    - “测试课程什么时候开课？”</span>
+<span class="s2">    请生成一个类似的查询，直接返回查询文本，不要多余说明。</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">generate_with_qwen</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+
+<span class="c1"># 保存数据集</span>
+<span class="k">def</span> <span class="nf">save_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">stage_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;保存数据集到指定文件&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage_name</span><span class="si">}</span><span class="s2">：已保存 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span><span class="si">}</span><span class="s2"> 条数据到 </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">generate_training_dataset</span><span class="p">(</span><span class="n">total_samples</span><span class="o">=</span><span class="mi">6000</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;生成6000条训练数据，规则和大模型各占一半，每1500条保存&quot;&quot;&quot;</span>
+    <span class="n">num_per_category</span> <span class="o">=</span> <span class="n">total_samples</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># 3000</span>
+    <span class="n">num_rule</span> <span class="o">=</span> <span class="n">num_per_category</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># 1500</span>
+    <span class="n">num_qwen</span> <span class="o">=</span> <span class="n">num_per_category</span> <span class="o">-</span> <span class="n">num_rule</span>  <span class="c1"># 1500</span>
+
+    <span class="n">generic_samples</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">professional_samples</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">generic_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">professional_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="c1"># 规则生成 - 通用知识</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;生成规则通用知识数据...&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">num_rule</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Rule-based Generic&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">generic_samples</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_rule</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="n">generate_generic_query_rule</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">q</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">generic_set</span><span class="p">:</span>
+                <span class="n">generic_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+                <span class="n">generic_samples</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;通用知识&quot;</span><span class="p">})</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">save_dataset</span><span class="p">(</span><span class="n">generic_samples</span><span class="p">,</span> <span class="s2">&quot;rule_generic_1500.json&quot;</span><span class="p">,</span> <span class="s2">&quot;规则通用知识&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 规则生成 - 专业咨询</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;生成规则专业咨询数据...&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">num_rule</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Rule-based Professional&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">professional_samples</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_rule</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="n">generate_professional_query_rule</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">q</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">professional_set</span><span class="p">:</span>
+                <span class="n">professional_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+                <span class="n">professional_samples</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;专业咨询&quot;</span><span class="p">})</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">save_dataset</span><span class="p">(</span><span class="n">professional_samples</span><span class="p">,</span> <span class="s2">&quot;rule_professional_1500.json&quot;</span><span class="p">,</span> <span class="s2">&quot;规则专业咨询&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Qwen-Plus生成 - 通用知识</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;生成Qwen-Plus通用知识数据...&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">num_qwen</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Qwen-based Generic&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">generic_samples</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_per_category</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="n">generate_generic_query_qwen</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">q</span> <span class="ow">and</span> <span class="n">q</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">generic_set</span><span class="p">:</span>
+                <span class="n">generic_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+                <span class="n">generic_samples</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;通用知识&quot;</span><span class="p">})</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># 避免 API 限流</span>
+    <span class="n">save_dataset</span><span class="p">(</span><span class="n">generic_samples</span><span class="p">,</span> <span class="s2">&quot;generic_3000.json&quot;</span><span class="p">,</span> <span class="s2">&quot;通用知识（规则+Qwen）&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Qwen-Plus生成 - 专业咨询</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;生成Qwen-Plus专业咨询数据...&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">num_qwen</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Qwen-based Professional&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">professional_samples</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">num_per_category</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="n">generate_professional_query_qwen</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">q</span> <span class="ow">and</span> <span class="n">q</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">professional_set</span><span class="p">:</span>
+                <span class="n">professional_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+                <span class="n">professional_samples</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;专业咨询&quot;</span><span class="p">})</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># 避免 API 限流</span>
+    <span class="n">save_dataset</span><span class="p">(</span><span class="n">professional_samples</span><span class="p">,</span> <span class="s2">&quot;professional_3000.json&quot;</span><span class="p">,</span> <span class="s2">&quot;专业咨询（规则+Qwen）&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 合并并混洗</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">generic_samples</span> <span class="o">+</span> <span class="n">professional_samples</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+    <span class="n">final_filename</span> <span class="o">=</span> <span class="s2">&quot;training_dataset_hybrid_6000.json&quot;</span>
+    <span class="n">save_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">final_filename</span><span class="p">,</span> <span class="s2">&quot;最终数据集&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dataset</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">generate_training_dataset</span><span class="p">(</span><span class="n">total_samples</span><span class="o">=</span><span class="mi">6000</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;成功生成 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span><span class="si">}</span><span class="s2"> 条训练数据，保存在 training_dataset_hybrid_6000.json 文件中。&quot;</span><span class="p">)</span>
+    <span class="c1"># 输出前10条作为示例</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">[:</span><span class="mi">10</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="_5">实现细节<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong><code>apply_synonym_variation</code></strong>：<ul>
+<li><strong>作用</strong>：为规则生成查询增加多样性，通过同义词替换（如“什么” -&gt; “啥是”）。</li>
+<li><strong>逻辑</strong>：正则表达式匹配词边界，50% 概率替换。</li>
+</ul>
+</li>
+<li><strong><code>generate_generic_query_rule</code> 和 <code>generate_professional_query_rule</code></strong>：<ul>
+<li><strong>作用</strong>：基于模板生成初始数据。</li>
+<li><strong>设计</strong>：覆盖数学计算、代码生成、概念问题和 IT 培训场景。</li>
+</ul>
+</li>
+<li><strong><code>generate_with_qwen</code></strong>：<ul>
+<li><strong>作用</strong>：封装 Qwen-Plus API 调用，生成自然语言查询。</li>
+<li><strong>参数</strong>：<code>temperature=0.9</code> 确保多样性，<code>timeout=10</code> 防止卡顿。</li>
+</ul>
+</li>
+<li><strong><code>generate_generic_query_qwen</code> 和 <code>generate_professional_query_qwen</code></strong>：<ul>
+<li><strong>作用</strong>：通过精心设计的 Prompt 指导 Qwen-Plus 生成符合类别的查询。</li>
+<li><strong>逻辑</strong>：提供示例，输出简洁的查询文本。</li>
+</ul>
+</li>
+<li><strong><code>save_dataset</code></strong>：<ul>
+<li><strong>作用</strong>：统一保存数据集，显示阶段名称和数据量。</li>
+<li><strong>实现</strong>：支持 JSON 格式，保存中间和最终结果。</li>
+</ul>
+</li>
+<li><strong><code>generate_training_dataset</code></strong>：<ul>
+<li><strong>作用</strong>：整合规则和大模型生成流程。</li>
+<li><strong>流程</strong>：<ul>
+<li>规则生成 1500 条“通用知识”，保存。</li>
+<li>规则生成 1500 条“专业咨询”，保存。</li>
+<li>Qwen-Plus 生成 1500 条“通用知识”，累计 3000 条保存。</li>
+<li>Qwen-Plus 生成 1500 条“专业咨询”，累计 3000 条保存。</li>
+<li>合并混洗 6000 条，保存最终数据集。</li>
+</ul>
+</li>
+<li><strong>进度条</strong>：<code>tqdm</code> 实时显示每个阶段的生成进度。</li>
+</ul>
+</li>
+</ol>
+<h3 id="_6">说明<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>混合生成</strong>：规则生成高效可控，Qwen-Plus 生成自然真实。</li>
+<li><strong>分阶段保存</strong>：每 1500 条保存一次，支持断点恢复。</li>
+<li><strong>进度监控</strong>：<code>tqdm</code> 提供直观反馈，优化用户体验。</li>
+</ul>
+<h3 id="_7">执行示例<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>运行脚本时，输出类似：
+<div class="highlight"><pre><span></span><code>生成规则通用知识数据...
+Rule-based Generic: 100%|██████████| 1500/1500 [00:02&lt;00:00, 750it/s]
+规则通用知识：已保存 1500 条数据到 rule_generic_1500.json
+生成规则专业咨询数据...
+Rule-based Professional: 100%|██████████| 1500/1500 [00:02&lt;00:00, 700it/s]
+规则专业咨询：已保存 1500 条数据到 rule_professional_1500.json
+生成Qwen-Plus通用知识数据...
+Qwen-based Generic: 100%|██████████| 1500/1500 [05:00&lt;00:00, 5it/s]
+通用知识（规则+Qwen）：已保存 3000 条数据到 generic_3000.json
+生成Qwen-Plus专业咨询数据...
+Qwen-based Professional: 100%|██████████| 1500/1500 [05:05&lt;00:00, 4.9it/s]
+专业咨询（规则+Qwen）：已保存 3000 条数据到 professional_3000.json
+最终数据集：已保存 6000 条数据到 training_dataset_hybrid_6000.json
+成功生成 6000 条训练数据，保存在 training_dataset_hybrid_6000.json 文件中。
+</code></pre></div></p>
+<hr />
+<h2 id="12">1.2 数据集生成流程<a class="headerlink" href="#12" title="Permanent link">&para;</a></h2>
+<h3 id="_8">生成流程<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>规则生成（3000 条）</strong>：<ul>
+<li>生成 1500 条“通用知识”数据，保存为 <code>rule_generic_1500.json</code>。</li>
+<li>生成 1500 条“专业咨询”数据，保存为 <code>rule_professional_1500.json</code>.</li>
+<li>使用模板和同义词替换，确保多样性。</li>
+</ul>
+</li>
+<li><strong>Qwen-Plus 生成（3000 条）</strong>：<ul>
+<li>生成 1500 条“通用知识”数据，累计 3000 条保存为 <code>generic_3000.json</code>。</li>
+<li>生成 1500 条“专业咨询”数据，累计 3000 条保存为 <code>professional_3000.json</code>.</li>
+<li>通过 Prompt 控制生成质量。</li>
+</ul>
+</li>
+<li><strong>数据整合</strong>：<ul>
+<li>合并 6000 条数据，随机混洗。</li>
+<li>保存为 <code>training_dataset_hybrid_6000.json</code>.</li>
+</ul>
+</li>
+</ol>
+<h3 id="_9">代码示例（使用数据集）<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># core/query_classifier.py</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfVectorizer</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">import</span> <span class="nn">joblib</span>
+
+<span class="k">class</span> <span class="nc">QueryClassifier</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;training_dataset_hybrid_6000.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+            <span class="p">(</span><span class="s2">&quot;tfidf&quot;</span><span class="p">,</span> <span class="n">TfidfVectorizer</span><span class="p">()),</span>
+            <span class="p">(</span><span class="s2">&quot;classifier&quot;</span><span class="p">,</span> <span class="n">MultinomialNB</span><span class="p">()),</span>
+        <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s2">&quot;query_classifier_model.pkl&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;模型训练完成并保存&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="13">1.3 数据集特点与优化<a class="headerlink" href="#13" title="Permanent link">&para;</a></h2>
+<h3 id="_10">数据集特点<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>总数</strong>：6000 条（“通用知识” 3000 条，“专业咨询” 3000 条）。</li>
+<li><strong>来源</strong>：规则生成 50%（3000 条），Qwen-Plus 生成 50%（3000 条）。</li>
+<li><strong>多样性</strong>：<ul>
+<li>规则生成：模板和同义词替换覆盖多种场景。</li>
+<li>Qwen-Plus 生成：自然语言查询贴近真实用户输入。</li>
+</ul>
+</li>
+<li><strong>保存机制</strong>：每 1500 条保存，支持断点续传。</li>
+<li><strong>可视化</strong>：<code>tqdm</code> 进度条提供实时反馈。</li>
+</ul>
+<h3 id="_11">优化效果<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>高效性</strong>：简化生成流程，规则生成瞬时完成。</li>
+<li><strong>可靠性</strong>：分阶段保存确保数据安全。</li>
+<li><strong>分类性能</strong>：均衡数据集提升 <code>QueryClassifier</code> 准确性。</li>
+<li><strong>用户体验</strong>：进度条和保存日志增强交互性。</li>
+</ul>
+<hr />
+<h2 id="_12">章节总结<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p>本章节详细介绍了优化后的 <code>generate_query_dataset_hybrid.py</code>：
+- <strong>功能</strong>：混合生成 6000 条数据，规则和 Qwen-Plus 各占一半。
+- <strong>实现</strong>：通过模板生成 3000 条，Qwen-Plus 生成 3000 条，每 1500 条保存，进度条监控。
+- <strong>作用</strong>：为 <code>QueryClassifier</code> 提供高质量数据，优化 EduRAG 系统分类能力。</p>
+<p>学习者掌握了高效的数据生成和保存方法，能够为 RAG 系统提供可靠支持。</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>

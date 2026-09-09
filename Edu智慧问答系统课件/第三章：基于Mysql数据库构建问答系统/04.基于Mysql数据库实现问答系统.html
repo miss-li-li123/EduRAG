@@ -1,0 +1,2048 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../img/logo.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>3.4 基于Mysql数据库实现问答系统 - EduRAG智慧回答项目V1.0</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mysqlfqa" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-header__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            EduRAG智慧回答项目V1.0
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3.4 基于Mysql数据库实现问答系统
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="EduRAG智慧回答项目V1.0" class="md-nav__button md-logo" aria-label="EduRAG智慧回答项目V1.0" data-md-component="logo">
+      
+  <img src="../img/logo.png" alt="logo">
+
+    </a>
+    EduRAG智慧回答项目V1.0
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1">
+          第一章:项目背景
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第一章:项目背景" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          第一章:项目背景
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%B8%80%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF/01-RAG%E7%B3%BB%E7%BB%9F%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D.html" class="md-nav__link">
+        1.1 项目背景介绍
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          第二章:项目工具介绍
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第二章:项目工具介绍" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          第二章:项目工具介绍
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/01-Ollama%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        2.1 Ollama大模型管理工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/02-LangChain%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86.html" class="md-nav__link">
+        2.2 LangChain基础知识
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/03-Milvus%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93.html" class="md-nav__link">
+        2.3 Mirvus向量数据库
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%8C%E7%AB%A0%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/Milvus%E5%92%8CRedis%E7%9A%84%E5%AE%89%E8%A3%85%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        2.3 Milvus和Redis的安装(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          第三章:基于Mysql数据库构建问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第三章:基于Mysql数据库构建问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          第三章:基于Mysql数据库构建问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="01.Python%E6%97%A5%E5%BF%97%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.1 Python日志介绍与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="02.BM25%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B%E4%B8%8E%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        3.2 BM25算法简介与应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="03.Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%80%E4%BB%8B%E4%B8%8E%E4%BD%BF%E7%94%A8.html" class="md-nav__link">
+        3.3 Redis数据库简介与使用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          3.4 基于Mysql数据库实现问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="04.%E5%9F%BA%E4%BA%8EMysql%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9E%E7%8E%B0%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F.html" class="md-nav__link md-nav__link--active">
+        3.4 基于Mysql数据库实现问答系统
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-fqa" class="md-nav__link">
+    1 FQA系统概述
+  </a>
+  
+    <nav class="md-nav" aria-label="1 FQA系统概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    1.1 系统流程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    1.2 项目结构
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 代码实现
+  </a>
+  
+    <nav class="md-nav" aria-label="2 代码实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configini" class="md-nav__link">
+    配置文件 (config.ini)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1 配置管理
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 配置管理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    2.2 日志记录
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 日志记录">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-mysql" class="md-nav__link">
+    2.3 MySQL操作模块
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3 MySQL操作模块">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-redis" class="md-nav__link">
+    2.4 Redis 缓存操作模块
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4 Redis 缓存操作模块">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25" class="md-nav__link">
+    2.5 文本预处理模块
+  </a>
+  
+    <nav class="md-nav" aria-label="2.5 文本预处理模块">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-bm25softmax" class="md-nav__link">
+    2.6 BM25+Softmax检索模块
+  </a>
+  
+    <nav class="md-nav" aria-label="2.6 BM25+Softmax检索模块">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-mainpy" class="md-nav__link">
+    3 主程序 (main.py)
+  </a>
+  
+    <nav class="md-nav" aria-label="3 主程序 (main.py)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    示例运行结果
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          第四章:基于Milvus数据库构建RAG问答系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第四章:基于Milvus数据库构建RAG问答系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          第四章:基于Milvus数据库构建RAG问答系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%B5%81%E7%A8%8B.html" class="md-nav__link">
+        4.1 整体架构与工程流程
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/02-%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.2 基础模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/03-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%E6%A8%A1%E5%9D%97.html" class="md-nav__link">
+        4.3 文档处理模块
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/04-%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8.html" class="md-nav__link">
+        4.4 向量存储
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/05-prompts%E8%AE%BE%E8%AE%A1%E4%B8%8Equery%E6%84%8F%E5%9B%BE%E8%AF%86%E5%88%AB.html" class="md-nav__link">
+        4.5 prompts设计与query意图识别
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/06-%E6%A3%80%E7%B4%A2%E7%AD%96%E7%95%A5%E4%B8%8ERAG%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1.html" class="md-nav__link">
+        4.6 检索策略与RAG系统设计
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/07-RAG%E7%B3%BB%E7%BB%9F%E8%BF%90%E8%A1%8C.html" class="md-nav__link">
+        4.7 RAG系统运行
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        4.8 文档解析工具(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          第五章:RAG系统评估
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第五章:RAG系统评估" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          第五章:RAG系统评估
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/01-RAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0%E5%B7%A5%E5%85%B7.html" class="md-nav__link">
+        5.1 RAG系统评估工具
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/02-%E5%AE%9E%E7%8E%B0EduRAG%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AF%84%E4%BC%B0.html" class="md-nav__link">
+        5.2 实现EduRAG系统的评估
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E4%BA%94%E7%AB%A0%EF%BC%9ARAG%E7%B3%BB%E7%BB%9F%E8%AF%84%E4%BC%B0/03-RAG%E8%AF%84%E4%BC%B0%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E6%9E%84%E9%80%A0%28%E6%89%A9%E5%B1%95%29.html" class="md-nav__link">
+        5.3 RAG评估数据集的构造(扩展)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          第六章:融合Mysql的RAG系统
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="第六章:融合Mysql的RAG系统" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          第六章:融合Mysql的RAG系统
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/01-%E8%9E%8D%E5%90%88FQA%E5%92%8C%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.1 融合FQA和知识库查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/02-%E5%A2%9E%E5%BC%BA%E5%9E%8BFAQ%E4%B8%8E%E7%9F%A5%E8%AF%86%E5%BA%93%E8%9E%8D%E5%90%88%E6%9F%A5%E8%AF%A2.html" class="md-nav__link">
+        6.2 增强型FAQ与知识库融合查询
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/03-%E7%B3%BB%E7%BB%9FAPI%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91%E5%8F%8Awebui%E5%BA%94%E7%94%A8.html" class="md-nav__link">
+        6.3 系统API接口开发及webui应用
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E7%AC%AC%E5%85%AD%E7%AB%A0%EF%BC%9A%E8%9E%8D%E5%90%88Mysql%E7%9A%84RAG%E7%B3%BB%E7%BB%9F/FastAPI%E5%92%8CFlask%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%28%E6%89%A9%E5%B1%95%E8%B5%84%E6%96%99%29.html" class="md-nav__link">
+        6.4 FastAPI和Flask的区别和联系(扩展资料)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    学习目标
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-fqa" class="md-nav__link">
+    1 FQA系统概述
+  </a>
+  
+    <nav class="md-nav" aria-label="1 FQA系统概述">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11" class="md-nav__link">
+    1.1 系统流程
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    1.2 项目结构
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2 代码实现
+  </a>
+  
+    <nav class="md-nav" aria-label="2 代码实现">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configini" class="md-nav__link">
+    配置文件 (config.ini)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    2.1 配置管理
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 配置管理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22" class="md-nav__link">
+    2.2 日志记录
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 日志记录">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-mysql" class="md-nav__link">
+    2.3 MySQL操作模块
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3 MySQL操作模块">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-redis" class="md-nav__link">
+    2.4 Redis 缓存操作模块
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4 Redis 缓存操作模块">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25" class="md-nav__link">
+    2.5 文本预处理模块
+  </a>
+  
+    <nav class="md-nav" aria-label="2.5 文本预处理模块">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    代码实现
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-bm25softmax" class="md-nav__link">
+    2.6 BM25+Softmax检索模块
+  </a>
+  
+    <nav class="md-nav" aria-label="2.6 BM25+Softmax检索模块">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    功能
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    说明
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-mainpy" class="md-nav__link">
+    3 主程序 (main.py)
+  </a>
+  
+    <nav class="md-nav" aria-label="3 主程序 (main.py)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    示例运行结果
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    总结
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="mysqlfqa">基于MySQL的FQA问答系统实现<a class="headerlink" href="#mysqlfqa" title="Permanent link">&para;</a></h1>
+<h2 id="_1">学习目标<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<ol>
+<li>理解FQA问答系统的整体流程。</li>
+<li>掌握如何整合MySQL、Redis和BM25算法构建QA问答系统。</li>
+</ol>
+<hr />
+<h2 id="1-fqa">1 FQA系统概述<a class="headerlink" href="#1-fqa" title="Permanent link">&para;</a></h2>
+<p>本系统从MySQL数据库检索问答对，使用BM25算法计算相似度，并通过Softmax归一化将得分转换为概率值，阈值0.85判断答案可靠性。Redis仅缓存高可靠性结果（相似度&gt;0.85且有答案）。若MySQL无可靠答案，则调用RAG系统检索。</p>
+<h3 id="11">1.1 系统流程<a class="headerlink" href="#11" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>数据存储</strong>：MySQL存储FQA高频问答对数据。</li>
+<li><strong>问题检索</strong>：BM25计算相似度，Softmax归一化后判断阈值0.85。</li>
+<li><strong>缓存管理</strong>：Redis仅存储相似度&gt;0.85且有答案的数据。</li>
+<li><strong>答案返回</strong>：<ul>
+<li>若MySQL返回可靠答案，直接返回。</li>
+<li>否则，调用RAG系统检索。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="12">1.2 项目结构<a class="headerlink" href="#12" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>integrated_qa_system/
+├── config.ini                     # 配置文件，包含所有模块的配置
+├── base/
+│   ├── config.py              # 配置管理，加载 config.ini
+│   ├── logger.py              # 日志设置
+├── mysql_qa/
+│   ├── data/
+│   │   ├── JP学科知识问答.csv    # FQA数据集
+│   ├── db/
+│   │   ├── mysql_client.py    # MySQL 数据库操作
+│   ├── cache/
+│   │   ├── redis_client.py    # Redis 缓存操作
+│   ├── retrieval/
+│   │   ├── bm25_search.py     # BM25 搜索
+│   ├── utils/
+│   │   ├── preprocess.py      # 文本预处理
+│   ├── main.py                # MySQL 系统独立入口，支持查询
+├── requirements.txt           # 依赖文件
+└── logs/
+    └── app.log                # 日志文件
+</code></pre></div>
+<h2 id="2">2 代码实现<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<h4 id="configini">配置文件 (<code>config.ini</code>)<a class="headerlink" href="#configini" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># MySQL 配置</span><span class="w"></span>
+<span class="k">[mysql]</span><span class="w"></span>
+<span class="na">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">localhost</span><span class="w"></span>
+<span class="na">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">root</span><span class="w"></span>
+<span class="na">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">123456</span><span class="w"></span>
+<span class="na">database</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">subjects_kg</span><span class="w"></span>
+
+<span class="c1"># Redis 配置</span><span class="w"></span>
+<span class="k">[redis]</span><span class="w"></span>
+<span class="na">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">localhost</span><span class="w"></span>
+<span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">6379</span><span class="w"></span>
+<span class="na">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1234</span><span class="w"></span>
+<span class="na">db</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span><span class="w"></span>
+
+<span class="c1"># 日志配置</span><span class="w"></span>
+<span class="k">[logger]</span><span class="w"></span>
+<span class="na">log_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/your/logs/app.log</span><span class="w"></span>
+</code></pre></div>
+<h3 id="21">2.1 配置管理<a class="headerlink" href="#21" title="Permanent link">&para;</a></h3>
+<h4 id="_2">功能<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
+<p><code>config.py</code>文件定义了<code>Config</code>类，用于集中管理系统中的所有配置参数。这些参数包括数据库连接信息、模型选择、分块策略、API设置等。通过集中管理配置，系统可以方便地调整参数、适配不同环境，并支持通过环境变量进行灵活配置。</p>
+<h4 id="_3">代码实现<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># base/config.py</span>
+<span class="c1"># 导入配置解析库</span>
+<span class="kn">import</span> <span class="nn">configparser</span>
+<span class="c1"># 导入路径操作库</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+    <span class="c1"># 初始化配置，加载 config.ini 文件</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;../config.ini&#39;</span><span class="p">):</span>
+        <span class="c1"># 创建配置解析器</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+        <span class="c1"># 读取配置文件</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+
+        <span class="c1"># MySQL 配置</span>
+        <span class="c1"># MySQL 主机地址</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MYSQL_HOST</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mysql&#39;</span><span class="p">,</span> <span class="s1">&#39;host&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">)</span> 
+        <span class="c1"># MySQL 用户名</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MYSQL_USER</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mysql&#39;</span><span class="p">,</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
+        <span class="c1"># MySQL 密码</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MYSQL_PASSWORD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mysql&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s1">&#39;123456&#39;</span><span class="p">)</span> 
+        <span class="c1"># MySQL 数据库名</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MYSQL_DATABASE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mysql&#39;</span><span class="p">,</span> <span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s1">&#39;subjects_kg&#39;</span><span class="p">)</span>  
+
+        <span class="c1"># Redis 配置</span>
+        <span class="c1"># Redis 主机地址</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">REDIS_HOST</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;redis&#39;</span><span class="p">,</span> <span class="s1">&#39;host&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">)</span> 
+        <span class="c1"># Redis 端口</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">REDIS_PORT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;redis&#39;</span><span class="p">,</span> <span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="mi">6379</span><span class="p">)</span>  
+        <span class="c1"># Redis 密码</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">REDIS_PASSWORD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;redis&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s1">&#39;1234&#39;</span><span class="p">)</span> 
+        <span class="c1"># Redis 数据库编号</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">REDIS_DB</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;redis&#39;</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  
+        <span class="c1"># 日志文件路径</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LOG_FILE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;logger&#39;</span><span class="p">,</span> <span class="s1">&#39;log_file&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s1">&#39;logs/app.log&#39;</span><span class="p">)</span>  
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">conf</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">CHILD_CHUNK_SIZE</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="_4">说明<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>默认值</strong>：每个参数设有默认值，确保未配置环境变量时系统仍可运行。</li>
+<li><strong>参数分类</strong>：按功能分类（如数据库、模型、分块等），便于管理和维护。</li>
+</ul>
+<hr />
+<h3 id="22">2.2 日志记录<a class="headerlink" href="#22" title="Permanent link">&para;</a></h3>
+<h4 id="_5">功能<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h4>
+<p><code>logger.py</code>文件定义了<code>setup_logging</code>函数，用于配置系统的日志记录器。日志记录器将运行信息、警告和错误输出到文件和控制台，便于开发、调试和运维人员监控系统状态。</p>
+<h4 id="_6">代码实现<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># base/logger.py</span>
+<span class="c1"># 导入日志库</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="c1"># 导入路径操作库</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="c1"># 导入配置类</span>
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">Config</span>
+
+
+<span class="k">def</span> <span class="nf">setup_logging</span><span class="p">(</span><span class="n">log_file</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">LOG_FILE</span><span class="p">):</span>
+    <span class="c1"># 创建日志目录</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">log_file</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># 获取日志器</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;EduRAG&quot;</span><span class="p">)</span>
+    <span class="c1"># 设置日志级别</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="c1"># 避免重复添加处理器</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+        <span class="c1"># 创建文件处理器</span>
+        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="c1"># 设置文件处理器级别</span>
+        <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="c1"># 创建控制台处理器</span>
+        <span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+        <span class="c1"># 设置控制台处理器级别</span>
+        <span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="c1"># 设置日志格式</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># 为文件处理器设置格式</span>
+        <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="c1"># 为控制台处理器设置格式</span>
+        <span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="c1"># 添加文件处理器</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+        <span class="c1"># 添加控制台处理器</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
+    <span class="c1"># 返回日志器</span>
+    <span class="k">return</span> <span class="n">logger</span>
+
+<span class="c1"># 初始化日志器</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logging</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="_7">说明<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>日志级别</strong>：默认设为<code>INFO</code>，记录关键运行信息。</li>
+<li><strong>双重输出</strong>：同时输出到文件和控制台，便于实时监控和后续分析。</li>
+<li><strong>格式化</strong>：日志包含时间戳、名称、级别和内容，便于问题定位。</li>
+</ul>
+<hr />
+<h3 id="23-mysql">2.3 MySQL操作模块<a class="headerlink" href="#23-mysql" title="Permanent link">&para;</a></h3>
+<h4 id="_8">功能<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<p><code>mysql_client.py</code>是一个用于与 MySQL 交互的模块。模块通过读取配置文件连接数据库，支持创建表、从 CSV 文件插入数据、查询问题和答案，以及安全关闭连接。所有操作均通过日志记录，便于调试和监控系统状态。</p>
+<h4 id="_9">代码实现<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># db/mysql_client.py</span>
+<span class="c1"># 导入 MySQL 连接库</span>
+<span class="kn">import</span> <span class="nn">pymysql</span>
+<span class="c1"># 导入pandas</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="c1"># 导入配置和日志</span>
+<span class="kn">from</span> <span class="nn">base</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">logger</span>
+
+
+<span class="k">class</span> <span class="nc">MySQLClient</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 初始化日志</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 连接 MySQL 数据库</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="n">host</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">MYSQL_HOST</span><span class="p">,</span>
+                <span class="n">user</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">MYSQL_USER</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">MYSQL_PASSWORD</span><span class="p">,</span>
+                <span class="n">database</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">MYSQL_DATABASE</span>
+            <span class="p">)</span>
+            <span class="c1"># 创建游标</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="c1"># 记录连接成功</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;MySQL 连接成功&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">MySQLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录连接失败</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MySQL 连接失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">create_table_query</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        CREATE TABLE IF NOT EXISTS jpkb (</span>
+<span class="s1">            id INT AUTO_INCREMENT PRIMARY KEY,</span>
+<span class="s1">            subject_name VARCHAR(20),</span>
+<span class="s1">            question VARCHAR(1000),</span>
+<span class="s1">            answer VARCHAR(1000))</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">create_table_query</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;表创建成功&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">MySQLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;表创建失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">insert_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csv_path</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="n">insert_query</span> <span class="o">=</span> <span class="s2">&quot;INSERT INTO jpkb (subject_name, question, answer) VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">insert_query</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;学科名称&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;问题&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;答案&#39;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;数据插入成功&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据插入失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">fetch_questions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 获取所有问题</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 执行查询</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT question FROM jpkb&quot;</span><span class="p">)</span>
+            <span class="c1"># 获取结果</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+            <span class="c1"># 记录获取成功</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;成功获取问题&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回结果</span>
+            <span class="k">return</span> <span class="n">results</span>
+        <span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">MySQLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录查询失败</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;查询失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回空列表</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">fetch_answer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">):</span>
+        <span class="c1"># 获取指定问题的答案</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 执行查询</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT answer FROM jpkb WHERE question=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">question</span><span class="p">,))</span>
+            <span class="c1"># 获取结果</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+            <span class="c1"># 返回答案或 None</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">MySQLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录答案获取失败</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;答案获取失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回 None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 关闭数据库连接</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 关闭连接</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="c1"># 记录关闭成功</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;MySQL 连接已关闭&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">MySQLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录关闭失败</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;关闭连接失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">mysql_client</span> <span class="o">=</span> <span class="n">MySQLClient</span><span class="p">()</span>
+    <span class="n">mysql_client</span><span class="o">.</span><span class="n">create_table</span><span class="p">()</span>
+    <span class="n">mysql_client</span><span class="o">.</span><span class="n">insert_data</span><span class="p">(</span><span class="s1">&#39;../data/JP学科知识问答.csv&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="_10">说明<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>数据库连接</strong>：通过 config.ini 配置文件读取 MySQL 参数，使用 pymysql 建立连接。</li>
+<li><strong>表管理</strong>：创建 jpkb 表，包含字段 id（自增主键）、subject_name（学科名称）、question（问题）、answer（答案），使用 IF NOT EXISTS 避免重复创建。</li>
+<li><strong>异常处理</strong>：每个方法均捕获异常，记录错误日志并根据需要回滚事务或抛出异常。</li>
+</ul>
+<hr />
+<h3 id="24-redis">2.4 Redis 缓存操作模块<a class="headerlink" href="#24-redis" title="Permanent link">&para;</a></h3>
+<h4 id="_11">功能<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h4>
+<p><code>redis_client.py</code>该模块用于与 Redis 数据库交互。模块通过配置文件连接 Redis，支持键值对存储与查询（使用 JSON 序列化）、答案缓存查询，并记录操作日志，便于调试和监控。</p>
+<h4 id="_12">代码实现<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># cache/redis_client.py</span>
+<span class="c1"># 导入 Redis 客户端</span>
+<span class="kn">import</span> <span class="nn">redis</span>
+<span class="c1"># 导入 JSON 处理</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="c1"># 导入配置和日志</span>
+<span class="kn">from</span> <span class="nn">base</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">logger</span>
+
+
+<span class="k">class</span> <span class="nc">RedisClient</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 初始化日志</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 连接 Redis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">StrictRedis</span><span class="p">(</span>
+                <span class="n">host</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">REDIS_HOST</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">REDIS_PORT</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">REDIS_PASSWORD</span><span class="p">,</span>
+                <span class="n">db</span><span class="o">=</span><span class="n">Config</span><span class="p">()</span><span class="o">.</span><span class="n">REDIS_DB</span><span class="p">,</span>
+                <span class="n">decode_responses</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="c1"># 记录连接成功</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Redis 连接成功&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">redis</span><span class="o">.</span><span class="n">RedisError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录连接失败</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redis 连接失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+    <span class="k">def</span> <span class="nf">set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># 存储数据到 Redis</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 存储 JSON 数据</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="c1"># 记录存储成功</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;存储数据到 Redis: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">redis</span><span class="o">.</span><span class="n">RedisError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录存储失败</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redis 存储失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c1"># 从 Redis 获取数据</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 获取数据</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="c1"># 返回解析后的 JSON 数据或 None</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="n">data</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="n">redis</span><span class="o">.</span><span class="n">RedisError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录获取失败</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redis 获取失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回 None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">get_answer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="c1"># 获取查询的缓存答案</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 从 Redis 获取答案</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;answer:</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">answer</span><span class="p">:</span>
+                <span class="c1"># 记录获取成功</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;从 Redis 获取答案: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># 返回答案</span>
+                <span class="k">return</span> <span class="n">answer</span>
+            <span class="c1"># 返回 None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="n">redis</span><span class="o">.</span><span class="n">RedisError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录查询失败</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Redis 查询失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回 None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">redcli</span> <span class="o">=</span> <span class="n">RedisClient</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">redcli</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="_13">说明<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Redis 连接</strong>：通过 config.ini 读取 Redis 配置，使用 redis.StrictRedis 建立连接。</li>
+<li><strong>数据操作</strong>： <ul>
+<li>set_data：将键值对（值序列化为 JSON）存储到 Redis。</li>
+<li>get_data：根据键获取值并反序列化 JSON。</li>
+<li>get_answer：查询以 answer:{query} 格式存储的答案缓存。</li>
+</ul>
+</li>
+</ul>
+<h3 id="25">2.5 文本预处理模块<a class="headerlink" href="#25" title="Permanent link">&para;</a></h3>
+<h4 id="_14">功能<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h4>
+<p><code>preprocess.py</code>是一个基于 jieba 分词库实现文本预处理的模块。该模块将输入文本转换为小写并进行分词，返回分词结果，支持日志记录以监控处理状态。</p>
+<h4 id="_15">代码实现<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># utils/preprocess.py</span>
+<span class="c1"># 导入分词库</span>
+<span class="kn">import</span> <span class="nn">jieba</span>
+<span class="c1"># 导入日志</span>
+<span class="kn">from</span> <span class="nn">base</span> <span class="kn">import</span> <span class="n">logger</span>
+
+<span class="k">def</span> <span class="nf">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="c1"># 预处理文本</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;开始预处理文本&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 分词并转换为小写</span>
+        <span class="k">return</span> <span class="n">jieba</span><span class="o">.</span><span class="n">lcut</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># 记录预处理失败</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;文本预处理失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># 返回空列表</span>
+        <span class="k">return</span> <span class="p">[]</span>
+</code></pre></div>
+<h4 id="_16">说明<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>文本处理</strong>：使用 jieba.lcut 对输入文本进行中文分词，并将文本转换为小写以规范化。</li>
+</ul>
+<h3 id="26-bm25softmax">2.6 BM25+Softmax检索模块<a class="headerlink" href="#26-bm25softmax" title="Permanent link">&para;</a></h3>
+<h4 id="_17">功能<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h4>
+<p><code>bm25_search.py</code> 是一个基于 BM25 算法和 Softmax 归一化的文本检索模块，用于从问题库中检索与查询最匹配的答案。模块结合 Redis 缓存和 MySQL 数据库，支持问题加载、分词、BM25 评分、Softmax 归一化，并记录操作日志。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># retrieval/bm25_search.py</span>
+<span class="c1"># 导入 BM25 算法</span>
+<span class="kn">from</span> <span class="nn">rank_bm25</span> <span class="kn">import</span> <span class="n">BM25Okapi</span>
+<span class="c1"># 导入数值计算库</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="c1"># 导入文本预处理</span>
+<span class="kn">from</span> <span class="nn">utils.preprocess</span> <span class="kn">import</span> <span class="n">preprocess_text</span>
+<span class="c1"># 导入日志</span>
+<span class="kn">from</span> <span class="nn">base</span> <span class="kn">import</span> <span class="n">logger</span>
+
+<span class="k">class</span> <span class="nc">BM25Search</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">redis_client</span><span class="p">,</span> <span class="n">mysql_client</span><span class="p">):</span>
+        <span class="c1"># 初始化日志</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="c1"># 初始化 Redis 客户端</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span> <span class="o">=</span> <span class="n">redis_client</span>
+        <span class="c1"># 初始化 MySQL 客户端</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mysql_client</span> <span class="o">=</span> <span class="n">mysql_client</span>
+        <span class="c1"># 初始化 BM25 模型</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bm25</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># 初始化问题列表</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">questions</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># 初始化原始问题</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_questions</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># 加载数据</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_data</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 加载数据</span>
+        <span class="n">original_key</span> <span class="o">=</span> <span class="s2">&quot;qa_original_questions&quot;</span>
+        <span class="n">tokenized_key</span> <span class="o">=</span> <span class="s2">&quot;qa_tokenized_questions&quot;</span>
+        <span class="c1"># 从 Redis 获取原始问题</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_questions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">original_key</span><span class="p">)</span>
+        <span class="c1"># 从 Redis 获取分词问题</span>
+        <span class="n">tokenized_questions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">tokenized_key</span><span class="p">)</span>
+        <span class="c1"># 如果 Redis 中没有数据，从 MySQL 加载</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_questions</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">tokenized_questions</span><span class="p">:</span>
+            <span class="c1"># 从 MySQL 获取问题</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">original_questions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mysql_client</span><span class="o">.</span><span class="n">fetch_questions</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_questions</span><span class="p">:</span>
+                <span class="c1"># 记录无问题警告</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;未加载到问题&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="c1"># 分词问题</span>
+            <span class="n">tokenized_questions</span> <span class="o">=</span> <span class="p">[</span><span class="n">preprocess_text</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_questions</span><span class="p">]</span>
+            <span class="c1"># 存储原始问题到 Redis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">original_key</span><span class="p">,</span> <span class="p">[(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_questions</span><span class="p">])</span>
+            <span class="c1"># 存储分词问题到 Redis</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">tokenized_key</span><span class="p">,</span> <span class="n">tokenized_questions</span><span class="p">)</span>
+        <span class="c1"># 设置问题列表</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">questions</span> <span class="o">=</span> <span class="n">tokenized_questions</span>
+        <span class="c1"># 初始化 BM25 模型</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bm25</span> <span class="o">=</span> <span class="n">BM25Okapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">questions</span><span class="p">)</span>
+        <span class="c1"># 记录 BM25 初始化成功</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;BM25 模型初始化完成&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_softmax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
+        <span class="c1"># 计算 Softmax 分数</span>
+        <span class="n">exp_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">scores</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+        <span class="c1"># 返回归一化分数</span>
+        <span class="k">return</span> <span class="n">exp_scores</span> <span class="o">/</span> <span class="n">exp_scores</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.85</span><span class="p">):</span>
+        <span class="c1"># 搜索查询</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># 记录无效查询</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;无效查询&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回 None 和 False</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="c1"># 检查 Redis 缓存</span>
+        <span class="n">cached_answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="o">.</span><span class="n">get_answer</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cached_answer</span><span class="p">:</span>
+            <span class="c1"># 返回缓存答案</span>
+            <span class="k">return</span> <span class="n">cached_answer</span><span class="p">,</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 分词查询</span>
+            <span class="n">query_tokens</span> <span class="o">=</span> <span class="n">preprocess_text</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="c1"># 计算 BM25 分数</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bm25</span><span class="o">.</span><span class="n">get_scores</span><span class="p">(</span><span class="n">query_tokens</span><span class="p">)</span>
+            <span class="c1"># 计算 Softmax 分数</span>
+            <span class="n">softmax_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_softmax</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+            <span class="c1"># 获取最高分索引</span>
+            <span class="n">best_idx</span> <span class="o">=</span> <span class="n">softmax_scores</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+            <span class="c1"># 获取最高分</span>
+            <span class="n">best_score</span> <span class="o">=</span> <span class="n">softmax_scores</span><span class="p">[</span><span class="n">best_idx</span><span class="p">]</span>
+            <span class="c1"># 检查是否超过阈值</span>
+            <span class="k">if</span> <span class="n">best_score</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="c1"># 获取原始问题</span>
+                <span class="n">original_question</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_questions</span><span class="p">[</span><span class="n">best_idx</span><span class="p">]</span>
+                <span class="c1"># 获取答案</span>
+                <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mysql_client</span><span class="o">.</span><span class="n">fetch_answer</span><span class="p">(</span><span class="n">original_question</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">answer</span><span class="p">:</span>
+                    <span class="c1"># 缓存答案</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;answer:</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
+                    <span class="c1"># 记录搜索成功</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;搜索成功，Softmax 相似度: </span><span class="si">{</span><span class="n">best_score</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="c1"># 返回答案和 False</span>
+                    <span class="k">return</span> <span class="n">answer</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="c1"># 记录无可靠答案</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;未找到可靠答案，最高 Softmax 相似度: </span><span class="si">{</span><span class="n">best_score</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回 None 和 True</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 记录搜索失败</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;搜索失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># 返回 None 和 True</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span>
+</code></pre></div>
+<h4 id="_18">说明<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>数据加载</strong>：优先从 Redis 获取问题和分词数据，若无则从 MySQL 加载并分词后缓存到 Redis。</li>
+<li><strong>BM25 检索</strong>：使用 BM25Okapi 计算查询与问题库的相似度，结合 Softmax 归一化评分。</li>
+<li><strong>答案查询</strong>：通过 Redis 缓存答案，若无缓存则从 MySQL 获取并缓存，阈值（默认 0.85）控制答案可靠性。</li>
+</ul>
+<h2 id="3-mainpy">3 主程序 (<code>main.py</code>)<a class="headerlink" href="#3-mainpy" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># 导入 MySQL 客户端</span>
+<span class="kn">from</span> <span class="nn">db.mysql_client</span> <span class="kn">import</span> <span class="n">MySQLClient</span>
+<span class="c1"># 导入 Redis 客户端</span>
+<span class="kn">from</span> <span class="nn">cache.redis_client</span> <span class="kn">import</span> <span class="n">RedisClient</span>
+<span class="c1"># 导入 BM25 搜索</span>
+<span class="kn">from</span> <span class="nn">retrieval.bm25_search</span> <span class="kn">import</span> <span class="n">BM25Search</span>
+<span class="c1"># 导入日志</span>
+<span class="kn">from</span> <span class="nn">base</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="c1"># 导入时间库</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">class</span> <span class="nc">MySQLQASystem</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 初始化日志</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="c1"># 初始化 MySQL 客户端</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mysql_client</span> <span class="o">=</span> <span class="n">MySQLClient</span><span class="p">()</span>
+        <span class="c1"># 初始化 Redis 客户端</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span> <span class="o">=</span> <span class="n">RedisClient</span><span class="p">()</span>
+        <span class="c1"># 初始化 BM25 搜索</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bm25_search</span> <span class="o">=</span> <span class="n">BM25Search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">redis_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mysql_client</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+        <span class="c1"># 查询 MySQL 系统</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="c1"># 记录查询信息</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;处理查询: &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="c1"># 执行 BM25 搜索</span>
+        <span class="n">answer</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bm25_search</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.85</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">answer</span><span class="p">:</span>
+            <span class="c1"># 记录 MySQL 答案</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MySQL 答案: </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 记录无答案</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;SQL中未找到答案, 需要调用RAG系统&quot;</span><span class="p">)</span>
+            <span class="c1"># 设置默认答案</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="s2">&quot;SQL未找到答案&quot;</span>
+        <span class="c1"># 计算处理时间</span>
+        <span class="n">processing_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="c1"># 记录处理时间</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;查询处理耗时 </span><span class="si">{</span><span class="n">processing_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">秒&quot;</span><span class="p">)</span>
+        <span class="c1"># 返回答案</span>
+        <span class="k">return</span> <span class="n">answer</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># 初始化 MySQL 系统</span>
+    <span class="n">mysql_system</span> <span class="o">=</span> <span class="n">MySQLQASystem</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 打印欢迎信息</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">欢迎使用 MySQL 问答系统！&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;输入查询进行问答，输入 &#39;exit&#39; 退出。&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># 获取用户输入</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">输入查询: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;exit&quot;</span><span class="p">:</span>
+                <span class="c1"># 记录退出日志</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;退出 MySQL 系统&quot;</span><span class="p">)</span>
+                <span class="c1"># 打印退出信息</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;再见！&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="c1"># 执行查询</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">mysql_system</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="c1"># 打印答案</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">答案: </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># 记录系统错误</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;系统错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># 打印错误信息</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;发生错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="c1"># 关闭 MySQL 连接</span>
+        <span class="n">mysql_system</span><span class="o">.</span><span class="n">mysql_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># 运行主程序</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<hr />
+<h3 id="_19">示例运行结果<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
+<p>假设MySQL中有数据：
+- 问题："特殊符号如何切割"，答案："使用split函数"
+- 问题："如何处理字符串"，答案："使用字符串方法"</p>
+<p>查询："特殊符号的切割"
+<div class="highlight"><pre><span></span><code>2025-04-01 10:00:00,123 - INFO - MySQL连接成功
+2025-04-01 10:00:00,125 - INFO - Redis连接成功
+2025-04-01 10:00:00,126 - INFO - BM25模型初始化完成
+欢迎使用 MySQL 问答系统！
+输入查询进行问答，输入 &#39;exit&#39; 退出。
+2025-04-01 10:00:00,127 - INFO - 检索成功，Softmax相似度: 0.892
+2025-04-01 10:00:00,128 - INFO - 数据存入Redis: answer:特殊符号的切割
+2025-04-01 10:00:00,129 - INFO - MySQL答案: 使用split函数
+2025-04-01 10:00:00,130 - INFO - MySQL连接已关闭
+</code></pre></div></p>
+<hr />
+<h2 id="_20">总结<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<p>本章整合Mysql和Redis功能，实现了基于余弦相似度问答的QA系统：</p>
+<ul>
+<li><strong>流程</strong>：MySQL存储数据，Redis缓存优化，TF-IDF和余弦相似度匹配问题。</li>
+<li><strong>工程化</strong>：模块化设计、配置文件、日志记录。</li>
+</ul>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="03.Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%80%E4%BB%8B%E4%B8%8E%E4%BD%BF%E7%94%A8.html" class="md-footer__link md-footer__link--prev" aria-label="上一页: 3.3 Redis数据库简介与使用" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              3.3 Redis数据库简介与使用
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../%E7%AC%AC%E5%9B%9B%E7%AB%A0%EF%BC%9A%E5%9F%BA%E4%BA%8EMilvus%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%84%E5%BB%BARAG%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/01-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%B5%81%E7%A8%8B.html" class="md-footer__link md-footer__link--next" aria-label="下一页: 4.1 整体架构与工程流程" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              4.1 整体架构与工程流程
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+        <script src="../js/extra.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+    
+  </body>
+</html>
