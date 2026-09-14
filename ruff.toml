@@ -1,0 +1,17 @@
+target-version = "py311"
+line-length = 120
+extend-exclude = ["notebooks", ".venv", "__pycache__"]
+
+[lint]
+select = ["E", "F", "W"]
+# E402: 脚本在 sys.path.insert 之后再导入项目模块属于合理模式
+# E501: 中文提示词/文档字符串过长，折行会损害可读性与语义
+ignore = ["E402", "E501"]
+
+[lint.per-file-ignores]
+# 实验/评估脚本保留相对宽松的风格
+"rag_qa/intent_compare/*" = ["E702", "E741", "F401"]
+"rag_qa/rag_assesment/*" = ["F401"]
+"**/__init__.py" = ["F401"]
+# 独立演示脚本
+"rag_qa/edu_document_loaders/review.py" = ["F403", "F405", "F401"]
