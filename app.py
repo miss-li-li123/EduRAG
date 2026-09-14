@@ -1,14 +1,13 @@
-from fastapi import FastAPI, WebSocket, HTTPException, Query, Depends
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from starlette.websockets import WebSocketDisconnect
 import os
 from pydantic import BaseModel
 import asyncio
 import json
 import uuid
-from typing import Optional, List, Dict, Any
+from typing import Optional
 import time
 import re
 
@@ -105,13 +104,18 @@ async def clear_history(session_id: str):
     else:
         raise HTTPException(status_code=500, detail="清除历史记录失败")
 
-# 检查是否为日常问候用语并返回模板回复
+# 检查是否为日常问候并返回模板回复
 def check_greeting(query: str) -> Optional[str]:
     query_text = query.strip()
     for pattern_info in GREETING_PATTERNS:
         if re.match(pattern_info["pattern"], query_text, re.IGNORECASE):
             return pattern_info["response"]
     return None
+
+
+def _sse(event: dict) -> str:
+    """将事件字典包装为 SSE data 帧"""
+    return f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
 
 
 # 入参 出参
@@ -158,15 +162,16 @@ async def generate_sse_stream(query: str, source_filter: Optional[str], session_
 
     try:
         # 发送开始事件
-        yield f"data: {json.dumps({'type': 'start', 'session_id': session_id})}\n\n"
+        yield _sse({'type': 'start', 'session_id': session_id})
 
         # 检查是否为日常问候
         greeting_response = check_greeting(query)
         if greeting_response:
             # 发送问候回复
-            yield f"data: {json.dumps({'type': 'token', 'token': greeting_response, 'session_id': session_id})}\n\n"
+            yield _sse({'type': 'token', 'token': greeting_response, 'session_id': session_id})
             # 发送结束事件
-            yield f"data: {json.dumps({'type': 'end', 'session_id': session_id, 'is_complete': True, 'processing_time': time.time() - start_time})}\n\n"
+            yield _sse({'type': 'end', 'session_id': session_id, 'is_complete': True,
+                        'processing_time': time.time() - start_time})
             return
 
         # 调用问答系统，流式处理查询
@@ -176,24 +181,25 @@ async def generate_sse_stream(query: str, source_filter: Optional[str], session_
 
             if is_complete and not collected_answer:
                 # 发送结束事件
-                yield f"data: {json.dumps({'type': 'end', 'session_id': session_id, 'is_complete': True, 'processing_time': time.time() - start_time})}\n\n"
+                yield _sse({'type': 'end', 'session_id': session_id, 'is_complete': True,
+                           'processing_time': time.time() - start_time})
                 break
 
             if token:
                 # 发送 token 数据
-                yield f"data: {json.dumps({'type': 'token', 'token': token, 'session_id': session_id})}\n\n"
+                yield _sse({'type': 'token', 'token': token, 'session_id': session_id})
 
             if is_complete:
                 # 发送结束事件
-                yield f"data: {json.dumps({'type': 'end', 'session_id': session_id, 'is_complete': True, 'processing_time': time.time() - start_time})}\n\n"
+                yield _sse({'type': 'end', 'session_id': session_id, 'is_complete': True,
+                           'processing_time': time.time() - start_time})
                 break
 
             await asyncio.sleep(0.01)  # 控制流式输出的速度
 
     except Exception as e:
         # 发送错误事件
-        error_msg = json.dumps({'type': 'error', 'error': str(e), 'session_id': session_id})
-        yield f"data: {error_msg}\n\n"
+        yield _sse({'type': 'error', 'error': str(e), 'session_id': session_id})
         print(f"SSE stream error: {str(e)}")
 
 
@@ -230,4 +236,4 @@ async def get_sources():
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app:app", host="0.0.0.0", port=8080, reload=False)
+    uvicorn.run("app:app", host="0.0.0.0", port=8001, reload=False)

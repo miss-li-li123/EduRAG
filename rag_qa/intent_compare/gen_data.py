@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """调用大模型生成意图识别训练/测试数据（通用知识 vs 专业咨询）。"""
-import sys, os, json, re, time, argparse
+import sys
+import os
+import json
+import re
+import time
+import argparse
 
 # 将项目根目录加入 sys.path，以便 import base / rag_qa
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))

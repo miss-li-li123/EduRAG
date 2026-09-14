@@ -18,6 +18,7 @@ services:
       - --data-dir=/etcd
       - --listen-client-urls=http://0.0.0.0:2379
       - --advertise-client-urls=http://milvus-etcd:2379
+    restart: unless-stopped
 
   minio:
     container_name: milvus-minio
@@ -26,6 +27,7 @@ services:
       - MINIO_ACCESS_KEY=minioadmin
       - MINIO_SECRET_KEY=minioadmin
     command: server /data --console-address ":9001"
+    restart: unless-stopped
     volumes:
       - ./minio_data:/data
     ports:

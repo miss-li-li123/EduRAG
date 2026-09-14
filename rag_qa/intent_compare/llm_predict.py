@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """用 大模型+提示词 对测试集做意图预测，逐条即时落盘到 data/llm_pred.jsonl（与测试集同序）。"""
-import sys, os, json
+import sys
+import os
+import json
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, ROOT)
 from llm_intent_classifier import LLMIntentClassifier

@@ -10,8 +10,10 @@ from langchain.docstore.document import Document
 from sentence_transformers import CrossEncoder
 # 导入 hashlib 模块，用于生成唯一 ID 的哈希值
 import hashlib
-from rag_qa.core.document_loader import *
-import sys, os
+import os
+import sys
+
+from rag_qa.core.document_loader import process_documents
 
 # 获取当前文件所在目录的绝对路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -142,7 +144,7 @@ class VectorStore:
                 else:  # csr_matrix 格式
                     indices = row.indices
                     values = row.data
-            except Exception as e:
+            except Exception:
                 # 兼容旧版本 milvus-model
                 row = embeddings["sparse"].getrow(i)
                 indices = row.indices
@@ -185,7 +187,7 @@ class VectorStore:
             else:  # csr_matrix 格式
                 indices = row.indices
                 values = row.data
-        except Exception as e:
+        except Exception:
             # 兼容旧版本 milvus-model
             row = query_embeddings["sparse"].getrow(0)
             indices = row.indices
@@ -216,7 +218,7 @@ class VectorStore:
         # 创建加权排序器，稀疏向量权重 0.7，稠密向量权重 1.0
         ranker = WeightedRanker(1.0, 0.7)
         # 执行混合搜索，返回 Top-K 结果
-        results = self.client.hybridd_search(
+        results = self.client.hybrid_search(
             collection_name=self.collection_name,
             reqs=[dense_request, sparse_request],
             ranker=ranker,

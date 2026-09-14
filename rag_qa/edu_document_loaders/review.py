@@ -53,7 +53,7 @@ def ppt2text(filepath):
                     resp += "\n".join(ocr_result)
                 print(f'resp222--》{resp}')
             elif shape.shape_type == 6:  # 6 表示组合
-                print(f'da')
+                print('da')
         print('*' * 80)
 
 

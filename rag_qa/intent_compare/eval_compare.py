@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """在同一测试集上对比 BERT 微调 与 大模型+提示词 的意图识别准确率。"""
-import sys, os, json, argparse
+import sys
+import os
+import json
+import argparse
 from collections import Counter
 import numpy as np
 import torch; torch.set_num_threads(1)  # 避免 Windows 上 OpenMP 多线程导致的 segfault

@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """补充测试集到 100 条（通用/专业各 50），并去重。"""
-import sys, os, json
+import sys
+import os
+import json
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from collections import Counter
 from gen_data import generate  # 仅导入函数，不会触发 main()

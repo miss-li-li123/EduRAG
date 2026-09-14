@@ -68,9 +68,15 @@ class RedisClient:
             # 从 Redis 获取答案
             answer = self.client.get(f"answer:{query}")
             if answer:
+                # 兼容历史上误以 JSON 格式写入的缓存（去除首尾引号）
+                if len(answer) >= 2 and answer.startswith('"') and answer.endswith('"'):
+                    try:
+                        answer = json.loads(answer)
+                    except (ValueError, TypeError):
+                        pass
                 # 记录获取成功
-                self.logger.info(f"从 Redis 获取到了答案: {query}， 答案：{answer}")
-                # 返回答案
+                self.logger.info(f"从 Redis 获取到了答案: {query}")
+                # 返回答案（纯文本存储，直接返回）
                 return answer
             # 返回 None
             return None
@@ -80,12 +86,22 @@ class RedisClient:
             # 返回 None
             return None
 
-
-import logging
-
-# 配置日志
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+    def set_answer(self, query, answer, expire=None):
+        # 缓存问答答案（纯文本，不做 JSON 包装）
+        try:
+            self.client.set(f"answer:{query}", answer)
+            if expire is None:
+                # 与 set_data 一致：默认当天 23:00 过期
+                now = datetime.now()
+                expire_at = datetime(now.year, now.month, now.day, 23, 0, 0)
+                if now >= expire_at:
+                    expire_at += timedelta(days=1)
+                self.client.expireat(f"answer:{query}", expire_at)
+            elif expire:
+                self.client.expire(f"answer:{query}", expire)
+            self.logger.info(f"缓存答案到 Redis: {query}")
+        except redis.RedisError as e:
+            self.logger.error(f"Redis 答案缓存失败: {e}")
 
 
 def main():

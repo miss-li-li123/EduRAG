@@ -4,7 +4,10 @@
 
 输出：rag_qa/core/bert_results/intent-ckpt/
 """
-import sys, os, json, argparse
+import sys
+import os
+import json
+import argparse
 import torch
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, TensorDataset

@@ -39,16 +39,10 @@ class MySQLClient:
                                  subject_name
                                  VARCHAR
                              (
-                                 20
+                                 50
                              ),
-                                 question VARCHAR
-                             (
-                                 1000
-                             ),
-                                 answer VARCHAR
-                             (
-                                 1000
-                             )
+                                 question TEXT,
+                                 answer MEDIUMTEXT
                                  ) \
                              '''
         try:

@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """大模型 + 提示词 的意图分类器（通用知识 / 专业咨询）。"""
-import sys, os, re, json
+import sys
+import os
+import re
+import json
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, ROOT)
 from base import Config

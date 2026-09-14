@@ -1,12 +1,18 @@
 # 导入配置解析库
+import ast
 import configparser
 # 导入路径操作库
 import os
 
+# 项目根目录（本文件位于 <root>/base/config.py）
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 class Config:
-    # 初始化配置，加载 config.ini 文件（路径要修改为这个文件的绝对路径）
-    def __init__(self, config_file="D:/code/PythonProject/Itcast_qa_system/config.ini"):
+    # 初始化配置，加载项目根目录下的 config.ini
+    def __init__(self, config_file=None):
+        if config_file is None:
+            config_file = os.path.join(PROJECT_ROOT, "config.ini")
         # 创建配置解析器
         self.config = configparser.ConfigParser()
         # 读取配置文件
@@ -48,8 +54,8 @@ class Config:
         # LLM 模型名
         self.LLM_MODEL = self.config.get('llm', 'model', fallback='deepseek-v4-flash')
         # DashScope API 密钥
-        # self.DASHSCOPE_API_KEY = self.config.get('llm', 'dashscope_api_key')
-        self.DASHSCOPE_API_KEY = os.getenv("ALIYUN_API_KEY")
+        # DashScope/OpenAI 兼容 API 密钥：环境变量优先，其次读 config.ini
+        self.DASHSCOPE_API_KEY = os.getenv("ALIYUN_API_KEY") or self.config.get('llm', 'dashscope_api_key', fallback=None)
         # DashScope API 地址
         self.DASHSCOPE_BASE_URL = self.config.get('llm', 'dashscope_base_url',
                                                   fallback='https://dashscope.aliyuncs.com/compatible-mode/v1')
@@ -67,19 +73,20 @@ class Config:
         self.CANDIDATE_M = self.config.getint('retrieval', 'candidate_m', fallback=2)
 
         # 应用配置
-        # 有效来源列表
-        self.VALID_SOURCES = eval(
+        # 有效来源列表（literal_eval 只允许字面量，避免 eval 的代码注入风险）
+        self.VALID_SOURCES = ast.literal_eval(
             self.config.get('app', 'valid_sources', fallback='["ai", "java", "test", "ops", "bigdata"]'))
         # 客服电话
         self.CUSTOMER_SERVICE_PHONE = self.config.get('app', 'customer_service_phone', fallback='12345678')
-        # 日志文件路径
+        # 日志文件路径（相对路径锚定到项目根目录）
         self.LOG_FILE = self.config.get('logger', 'log_file', fallback='logs/app.log')
+        if not os.path.isabs(self.LOG_FILE):
+            self.LOG_FILE = os.path.join(PROJECT_ROOT, self.LOG_FILE)
 
-        # model path
-        # self.bge_m3 = "D:/code/PythonProject/Itcast_qa_system/rag_qa/models/bge-m3"
-        # self.bge_reranker = "D:/code/PythonProject/Itcast_qa_system/rag_qa/models/bge-reranker-large"
-        self.nlp_bert_doc_seg = "D:/code/PythonProject/Itcast_qa_system/rag_qa/models/nlp_bert_document-segmentation_chinese-base"
-        self.bert_intent_cls = "D:/code/PythonProject/Itcast_qa_system/rag_qa/core/bert_query_classifier"
+        # model path（项目内相对路径）
+        self.nlp_bert_doc_seg = os.path.join(PROJECT_ROOT, "rag_qa", "models",
+                                             "nlp_bert_document-segmentation_chinese-base")
+        self.bert_intent_cls = os.path.join(PROJECT_ROOT, "rag_qa", "core", "bert_query_classifier")
 
 
 if __name__ == '__main__':

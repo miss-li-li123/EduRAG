@@ -2,3 +2,18 @@
 /logs
 /rag_qa/models
 /rag_qa/core/bert*
+# 本地环境
+.venv/
+__pycache__/
+*.pyc
+bert_outputs/
+bert_results/
+bert_logs/
+scripts/__pycache__/
+# 容器运行时数据（Milvus/Redis/etcd/MinIO 落盘目录）
+/docker/milvus_redis/etcd_data/
+/docker/milvus_redis/milvus_data/
+/docker/milvus_redis/minio_data/
+/docker/milvus_redis/redis_data/
+# macOS/资源管理器杂项
+.DS_Store

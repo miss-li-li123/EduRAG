@@ -31,7 +31,7 @@ def main(query_mode=True, directory_path="data"):
     def call_dashscope(prompt):
         if not client:  # 检查客户端是否可用
             logger.error("LLM 客户端未初始化，无法调用 call_dashscope")
-            return f"错误: LLM客户端不可用"
+            return "错误: LLM客户端不可用"
         try:
             completion = client.chat.completions.create(
                 model=conf.LLM_MODEL,
@@ -137,7 +137,7 @@ def main(query_mode=True, directory_path="data"):
                 print("-" * 30)
             except Exception as e:
                 logger.error(f"处理查询 '{query}' 时失败: {str(e)}")
-                print(f"抱歉，处理您的问题时遇到了错误，请稍后重试或联系管理员。\n")
+                print("抱歉，处理您的问题时遇到了错误，请稍后重试或联系管理员。\n")
 
 
 if __name__ == "__main__":

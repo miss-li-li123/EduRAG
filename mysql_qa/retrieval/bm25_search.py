@@ -44,10 +44,15 @@ class BM25Search:
                 # 记录无问题警告
                 self.logger.warning("未加载到问题")
                 return
+            # fetchall() 返回的是元组列表，展平为字符串列表
+            self.original_questions = [
+                q[0] if isinstance(q, (tuple, list)) else q
+                for q in self.original_questions
+            ]
             # 分词问题
-            tokenized_questions = [preprocess_text(q[0]) for q in self.original_questions]
+            tokenized_questions = [preprocess_text(q) for q in self.original_questions]
             # 存储原始问题到 Redis
-            self.redis_client.set_data(original_key, [(q[0]) for q in self.original_questions])
+            self.redis_client.set_data(original_key, self.original_questions)
             # 存储分词问题到 Redis
             self.redis_client.set_data(tokenized_key, tokenized_questions)
         # 设置问题列表
@@ -101,8 +106,8 @@ class BM25Search:
                 # 获取MySQL答案
                 answer = self.mysql_client.fetch_answer(original_question)
                 if answer:
-                    # 缓存答案
-                    self.redis_client.set_data(f"answer:{original_question}", answer)
+                    # 缓存答案（纯文本）
+                    self.redis_client.set_answer(original_question, answer)
                     # 记录搜索成功
                     self.logger.info(f"搜索成功，Softmax 相似度: {best_score:.3f}")
                     # 返回答案和 False

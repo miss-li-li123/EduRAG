@@ -4,7 +4,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders.markdown import UnstructuredMarkdownLoader
 from langchain.text_splitter import MarkdownTextSplitter
 from datetime import datetime
-from rag_qa.edu_text_spliter import AliTextSplitter, ChineseRecursiveTextSplitter
+from rag_qa.edu_text_spliter import ChineseRecursiveTextSplitter
 from rag_qa.edu_document_loaders import OCRPDFLoader, OCRDOCLoader, OCRPPTLoader, OCRIMGLoader
 from base import logger, Config
 
